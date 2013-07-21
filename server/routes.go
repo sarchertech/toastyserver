@@ -9,7 +9,7 @@ import (
 func getRoutes() map[string]http.HandlerFunc {
 	r := make(map[string]http.HandlerFunc)
 
-	r["/json"] = helloServer
+	//r["/json"] = helloServer
 	r["/employee_login"] = employeeLogin
 
 	return r
