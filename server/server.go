@@ -7,25 +7,27 @@ import (
 	"net/http"
 )
 
-//wraps handlers to add default headers
-func defaultHeaders(handler http.HandlerFunc) http.HandlerFunc {
+type toastyHndlrFnc func(*http.Request, *map[string]string)
+
+func handlerWrapper(handler toastyHndlrFnc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		handler(w, r)
-	}
-}
+		//result gets set inside the handler function, would have liked
+		//to keep this more functional, but this is more efficient for
+		//large return data
+		result := make(map[string]string)
+		handler(r, &result)
 
-//json writing convience function for handlers
-func writeJson(w http.ResponseWriter, result map[string]string) {
-	j, err := json.Marshal(result)
-	if err != nil {
-		log.Println(err)
-		errs := `{"error": "json.Marshal failed", "name": ""}`
-		w.Write([]byte(errs))
-		return
+		j, err := json.Marshal(result)
+		if err != nil {
+			log.Println(err)
+			errs := `{"error": "json.Marshal failed", "name": ""}`
+			w.Write([]byte(errs))
+			return
+		}
+		w.Write(j)
 	}
-	w.Write(j)
 }
 
 func StartServer() {
@@ -34,7 +36,7 @@ func StartServer() {
 
 	routes := getRoutes()
 	for key, value := range routes {
-		http.HandleFunc(key, defaultHeaders(value))
+		http.HandleFunc(key, handlerWrapper(value))
 	}
 
 	err := http.ListenAndServe(":9000", nil)

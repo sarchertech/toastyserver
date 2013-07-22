@@ -37,32 +37,28 @@ import (
 // 	w.Write(b)
 // }
 
-func employeeLogin(w http.ResponseWriter, req *http.Request) {
+func employeeLogin(req *http.Request, result *map[string]string) {
 	keyNum := req.FormValue("KeyfobNumber")
 
-	result := make(map[string]string)
-
-	result["name"], result["error"] = database.FindEmployee(keyNum)
-
-	writeJson(w, result)
+	(*result)["name"], (*result)["error"] = database.FindEmployee(keyNum)
 }
 
-func customerList(w http.ResponseWriter, req *http.Request) {
+func customerList(req *http.Request, result *map[string]string) {
 
 }
 
-func customerListByName(w http.ResponseWriter, req *http.Request) {
+func customerListByName(req *http.Request, result *map[string]string) {
 
 }
 
-func customerDetails(w http.ResponseWriter, req *http.Request) {
+func customerDetails(req *http.Request, result *map[string]string) {
 
 }
 
-func addNewCustomer(w http.ResponseWriter, req *http.Request) {
+func addNewCustomer(req *http.Request, result *map[string]string) {
 
 }
 
-func availableKeyfobs(w http.ResponseWriter, req *http.Request) {
+func availableKeyfobs(req *http.Request, result *map[string]string) {
 
 }
