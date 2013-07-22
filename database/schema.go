@@ -13,6 +13,7 @@ func schema() map[string]string {
 			 		  status boolean not null,
 			 		  level integer not null)`
 
+	//TODO need to enforce Uniqueness on name
 	s["Employee"] = `(id integer primary key,
 	 		 		  name text not null,
 			 		  level integer not null)`

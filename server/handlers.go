@@ -2,6 +2,8 @@ package server
 
 import (
 	"encoding/json"
+	"github.com/learc83/toastyserver/database"
+	"log"
 	"net/http"
 )
 
@@ -36,13 +38,36 @@ import (
 // }
 
 func employeeLogin(w http.ResponseWriter, req *http.Request) {
-	eNum := req.FormValue("EmployeeNumber")
+	keyNum := req.FormValue("KeyfobNumber")
 
-	found := true //FindEmployee(eNum)
+	result := make(map[string]string)
 
-	if found {
-		w.Write([]byte("Authorized " + eNum))
-	} else {
-		w.Write([]byte("Not Authorized"))
+	result["name"] = database.FindEmployee(keyNum)
+
+	j, err := json.Marshal(result)
+	if err != nil {
+		log.Println(err)
+		return
 	}
+	w.Write(j)
+}
+
+func customerList(w http.ResponseWriter, req *http.Request) {
+
+}
+
+func customerListByName(w http.ResponseWriter, req *http.Request) {
+
+}
+
+func customerDetails(w http.ResponseWriter, req *http.Request) {
+
+}
+
+func addNewCustomer(w http.ResponseWriter, req *http.Request) {
+
+}
+
+func availableKeyfobs(w http.ResponseWriter, req *http.Request) {
+
 }
