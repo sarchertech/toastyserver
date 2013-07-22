@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"github.com/learc83/toastyserver/database"
 	"log"
 	"net/http"
@@ -13,6 +14,18 @@ func defaultHeaders(handler http.HandlerFunc) http.HandlerFunc {
 
 		handler(w, r)
 	}
+}
+
+//json writing convience function for handlers
+func writeJson(w http.ResponseWriter, result map[string]string) {
+	j, err := json.Marshal(result)
+	if err != nil {
+		log.Println(err)
+		errs := `{"error": "json.Marshal failed", "name": ""}`
+		w.Write([]byte(errs))
+		return
+	}
+	w.Write(j)
 }
 
 func StartServer() {

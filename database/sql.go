@@ -12,8 +12,10 @@ import (
 	"strconv"
 )
 
-func FindEmployee(keyNum string) string {
-	//return "Jane Butts"
+func FindEmployee(keyNum string) (name string, errs string) {
+	name = ""
+	errs = ""
+
 	stmt, err := db.Prepare(`SELECT name
 							FROM Employee
 							Join Keyfob
@@ -21,7 +23,8 @@ func FindEmployee(keyNum string) string {
 							WHERE Keyfob.fob_num=?`)
 	if err != nil {
 		log.Println(err)
-		return ""
+		errs = err.Error()
+		return
 	}
 	defer stmt.Close()
 
@@ -30,15 +33,16 @@ func FindEmployee(keyNum string) string {
 	keyNumInt, err = strconv.Atoi(keyNum) //Atoi shortcut for ParseInt(s,10,0)
 	if err != nil {
 		log.Println(err)
-		return ""
+		errs = err.Error()
+		return
 	}
 
-	var name string
 	err = stmt.QueryRow(keyNumInt).Scan(&name)
 	if err != nil {
 		log.Println(err)
-		return ""
+		errs = err.Error()
+		return
 	}
 
-	return name
+	return
 }

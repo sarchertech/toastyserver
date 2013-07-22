@@ -1,9 +1,9 @@
 package server
 
 import (
-	"encoding/json"
+	//"encoding/json"
 	"github.com/learc83/toastyserver/database"
-	"log"
+	//"log"
 	"net/http"
 )
 
@@ -42,14 +42,9 @@ func employeeLogin(w http.ResponseWriter, req *http.Request) {
 
 	result := make(map[string]string)
 
-	result["name"] = database.FindEmployee(keyNum)
+	result["name"], result["error"] = database.FindEmployee(keyNum)
 
-	j, err := json.Marshal(result)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	w.Write(j)
+	writeJson(w, result)
 }
 
 func customerList(w http.ResponseWriter, req *http.Request) {
