@@ -3,7 +3,8 @@ package server
 import (
 	//"encoding/json"
 	"github.com/learc83/toastyserver/database"
-	//"log"
+	"log"
+	//"fmt"
 	"net/http"
 )
 
@@ -37,14 +38,21 @@ import (
 // 	w.Write(b)
 // }
 
+//http handlers--result should be returned as a hashmap with an
+//"error" key, and a data key. Example: result["name"] = "jane",
+//result["error"] = ""
+
 func employeeLogin(req *http.Request, result *map[string]string) {
 	keyNum := req.FormValue("KeyfobNumber")
 
-	(*result)["name"], (*result)["error"] = database.FindEmployee(keyNum)
+	rawResult, err := database.FindEmployee(keyNum)
+
+	(*result)["name"] = rawResult
+	(*result)["error"] = stringifyErr(err)
 }
 
 func customerList(req *http.Request, result *map[string]string) {
-
+	//(*result)["customers"], (*result)["error"] = database.RecentFiftyCustomers()
 }
 
 func customerListByName(req *http.Request, result *map[string]string) {
@@ -61,4 +69,15 @@ func addNewCustomer(req *http.Request, result *map[string]string) {
 
 func availableKeyfobs(req *http.Request, result *map[string]string) {
 
+}
+
+//This is required because errors default strinfigy method: Error()
+//returns nil instead of an empty string
+func stringifyErr(err error) string {
+	if err != nil {
+		log.Println(err)
+		errs := err.Error()
+		return errs
+	}
+	return ""
 }
