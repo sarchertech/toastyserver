@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-type toastyHndlrFnc func(*http.Request, *map[string]string)
+type toastyHndlrFnc func(*http.Request, *map[string]interface{})
 
 func handlerWrapper(handler toastyHndlrFnc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -16,7 +16,7 @@ func handlerWrapper(handler toastyHndlrFnc) http.HandlerFunc {
 		//result gets set inside the handler function, would have liked
 		//to keep this more functional, but this is more efficient for
 		//large return data
-		result := make(map[string]string)
+		result := make(map[string]interface{})
 		handler(r, &result)
 
 		j, err := json.Marshal(result)
