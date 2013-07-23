@@ -72,13 +72,11 @@ type CustomerOverview struct {
 	Phone  string
 	Status bool
 	Level  int
-	//CustomerNumber string
-	//Level          int8
 }
 
+//TODO limit results to 50
+//Work on error for no rows
 func RecentFiftyCustomers() (customers []CustomerOverview, err error) {
-	//customers = "sdasdgdf"
-
 	rows, err := db.Query(`SELECT *
 						   FROM Customer`)
 	if err != nil {
@@ -87,6 +85,33 @@ func RecentFiftyCustomers() (customers []CustomerOverview, err error) {
 	defer rows.Close()
 
 	//var customers []CustomerOverview
+
+	//equivalent to while rows.Next() == true
+	for rows.Next() {
+		var c CustomerOverview
+		rows.Scan(&c.Id, &c.Name, &c.Phone, &c.Status, &c.Level)
+		//fmt.Println(customer.Name)
+
+		customers = append(customers, c)
+	}
+	rows.Close()
+
+	return
+}
+
+//TODO limit results to 50
+func FindCustomersByName(name string) (customers []CustomerOverview, err error) {
+	stmt, err := db.Prepare(`SELECT *
+						   	 FROM Customer
+						   	 WHERE Customer.name LIKE ?`)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	//TODO fix error handling
+	rows, _ := stmt.Query("%" + name + "%")
+	defer rows.Close()
 
 	//equivalent to while rows.Next() == true
 	for rows.Next() {

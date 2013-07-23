@@ -2,6 +2,7 @@ package server
 
 import (
 	//"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/learc83/toastyserver/database"
 	"log"
@@ -45,7 +46,6 @@ import (
 
 func employeeLogin(req *http.Request, result *map[string]interface{}) {
 	keyNum := req.FormValue("KeyfobNumber")
-
 	keyNumInt, err := strconv.Atoi(keyNum) //Atoi shortcut for ParseInt(s,10,0)
 	if err != nil {
 		(*result)["error"] = stringifyErr(err, "employeeLogin()")
@@ -53,22 +53,39 @@ func employeeLogin(req *http.Request, result *map[string]interface{}) {
 	}
 
 	data, err := database.FindEmployee(keyNumInt)
+	if err != nil {
+		(*result)["error"] = stringifyErr(err, "employeeLogin()")
+		return
+	}
 
 	(*result)["name"] = data
-	(*result)["error"] = stringifyErr(err, "employeeLogin()")
 }
 
 func customerList(req *http.Request, result *map[string]interface{}) {
-	//(*result)["customers"], (*result)["error"] = database.RecentFiftyCustomers()
-
 	data, err := database.RecentFiftyCustomers()
+	if err != nil {
+		(*result)["error"] = stringifyErr(err, "customerList()")
+		return
+	}
 
 	(*result)["customers"] = data
-	(*result)["error"] = stringifyErr(err, "customerList()")
 }
 
-func customerListByName(req *http.Request, result *map[string]string) {
+func customerListByName(req *http.Request, result *map[string]interface{}) {
+	name := req.FormValue("CustomerName")
+	if name == "" {
+		err := errors.New("CustomerName param blank")
+		(*result)["error"] = stringifyErr(err, "customerListByName()")
+		return
+	}
 
+	data, err := database.FindCustomersByName(name)
+	if err != nil {
+		(*result)["error"] = stringifyErr(err, "customerListByName()")
+		return
+	}
+
+	(*result)["customers"] = data
 }
 
 func customerDetails(req *http.Request, result *map[string]string) {
