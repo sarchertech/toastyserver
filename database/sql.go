@@ -109,17 +109,25 @@ func FindCustomersByName(name string) (customers []CustomerOverview, err error) 
 	}
 	defer stmt.Close()
 
-	//TODO fix error handling
-	rows, _ := stmt.Query("%" + name + "%")
+	rows, err := stmt.Query("%" + name + "%")
+	if err != nil {
+		return
+	}
 	defer rows.Close()
 
 	//equivalent to while rows.Next() == true
 	for rows.Next() {
 		var c CustomerOverview
-		rows.Scan(&c.Id, &c.Name, &c.Phone, &c.Status, &c.Level)
-		//fmt.Println(customer.Name)
+		err = rows.Scan(&c.Id, &c.Name, &c.Phone, &c.Status, &c.Level)
+		if err != nil {
+			return
+		}
 
 		customers = append(customers, c)
+	}
+	if rows.Err() != nil {
+		err = rows.Err()
+		return
 	}
 	rows.Close()
 
