@@ -11,15 +11,17 @@ func schema() map[string]string {
 	 		 		  name text not null,
 	 		 		  phone text not null,
 			 		  status boolean not null,
-			 		  level integer not null)`
+			 		  level integer not null,
+			 		  fob_num integer not null unique)`
 
 	//TODO need to enforce Uniqueness on name
 	s["Employee"] = `(id integer primary key,
 	 		 		  name text not null,
-			 		  level integer not null)`
+			 		  level integer not null,
+			 		  fob_num integer not null unique)`
 
 	s["Keyfob"] = `(fob_num integer not null primary key,
-	 		 		customer_id integer)` //foreign key, but not enforced by sqlite
+					admin boolean not null)`
 
 	return s
 }

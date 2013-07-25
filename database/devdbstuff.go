@@ -27,20 +27,20 @@ func addDevData() {
 	//initialize random seed
 	r = rand.New(rand.NewSource(randSeed))
 
-	addFakeCustomers()
-	addFakeEmployees()
-	addFakeKeyfobs()
+	fakeKeyNums := addFakeKeyfobs()
+	addFakeCustomers(fakeKeyNums)
+	addFakeEmployees(fakeKeyNums)
 }
 
-func addFakeCustomers() {
+func addFakeCustomers(fakeKeyNums []int32) {
 	tx, err := db.Begin()
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	stmt, err := tx.Prepare("insert into Customer(id, name, phone, status, level) " +
-		"values(?, ?, ?, ?, ?)")
+	stmt, err := tx.Prepare("insert into Customer(id, name, phone, status, level, fob_num) " +
+		"values(?, ?, ?, ?, ?, ?)")
 
 	if err != nil {
 		log.Println(err)
@@ -52,7 +52,7 @@ func addFakeCustomers() {
 	fakePhones := fakePhones(10)
 
 	for i := 0; i < 10; i++ {
-		_, err = stmt.Exec(nil, fakeNames[i], fakePhones[i], 1, 3) //insert null into id to auto incrment
+		_, err = stmt.Exec(nil, fakeNames[i], fakePhones[i], 1, r.Intn(5)+1, fakeKeyNums[i]) //insert null into id to auto incrment
 
 		if err != nil {
 			log.Println(err)
@@ -62,15 +62,15 @@ func addFakeCustomers() {
 	tx.Commit()
 }
 
-func addFakeEmployees() {
+func addFakeEmployees(fakeKeyNums []int32) {
 	tx, err := db.Begin()
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	stmt, err := tx.Prepare("insert into Employee(id, name, level) " +
-		"values(?, ?, ?)")
+	stmt, err := tx.Prepare("insert into Employee(id, name, level, fob_num) " +
+		"values(?, ?, ?, ?)")
 
 	if err != nil {
 		log.Println(err)
@@ -81,7 +81,7 @@ func addFakeEmployees() {
 	fakeNames := fakeNames(10)
 
 	for i := 0; i < 10; i++ {
-		_, err = stmt.Exec(nil, fakeNames[i], 1) //insert null into id to auto incrment
+		_, err = stmt.Exec(nil, fakeNames[i], 1, fakeKeyNums[i+10]) //insert null into id to auto incrment
 
 		if err != nil {
 			log.Println(err)
@@ -91,14 +91,14 @@ func addFakeEmployees() {
 	tx.Commit()
 }
 
-func addFakeKeyfobs() {
+func addFakeKeyfobs() (fakeNums []int32) {
 	tx, err := db.Begin()
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	stmt, err := tx.Prepare("insert into Keyfob(fob_num, customer_id) " +
+	stmt, err := tx.Prepare("insert into Keyfob(fob_num, admin) " +
 		"values(?, ?)")
 
 	if err != nil {
@@ -107,9 +107,20 @@ func addFakeKeyfobs() {
 	}
 	defer stmt.Close()
 
-	fakeNums := fakeNumbers(10)
+	fakeNums = fakeNumbers(20)
+
+	//fake Customer Keyfobs
 	for i := 0; i < 10; i++ {
-		_, err = stmt.Exec(fakeNums[i], i+1)
+		_, err = stmt.Exec(fakeNums[i], false)
+
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	}
+	//fake Employee Keyfobs
+	for i := 10; i < 20; i++ {
+		_, err = stmt.Exec(fakeNums[i], true)
 
 		if err != nil {
 			log.Println(err)
@@ -120,7 +131,17 @@ func addFakeKeyfobs() {
 	//add 5 more keyfobs with no customer associated
 	moreFakeNums := fakeNumbers(10)
 	for i := 0; i < 5; i++ {
-		_, err = stmt.Exec(moreFakeNums[i], nil)
+		_, err = stmt.Exec(moreFakeNums[i], false)
+
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	}
+
+	//add 5 more keyfobs with no  employee associated
+	for i := 5; i < 10; i++ {
+		_, err = stmt.Exec(moreFakeNums[i], true)
 
 		if err != nil {
 			log.Println(err)
@@ -129,6 +150,8 @@ func addFakeKeyfobs() {
 	}
 
 	tx.Commit()
+
+	return
 }
 
 func fakeNames(number int) []string {

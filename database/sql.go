@@ -49,9 +49,7 @@ func FindEmployee(keyNum int) (name string, err error) {
 	var stmt *sql.Stmt
 	stmt, err = db.Prepare(`SELECT name
 							FROM Employee
-							Join Keyfob
-							ON Employee.id=Keyfob.customer_id
-							WHERE Keyfob.fob_num=?`)
+							WHERE Employee.fob_num=?`)
 	if err != nil {
 		return
 	}
@@ -77,7 +75,7 @@ type CustomerOverview struct {
 //TODO limit results to 50
 //Work on error for no rows
 func RecentFiftyCustomers() (customers []CustomerOverview, err error) {
-	rows, err := db.Query(`SELECT *
+	rows, err := db.Query(`SELECT id, name, phone, status, level
 						   FROM Customer`)
 	if err != nil {
 		return
@@ -101,7 +99,7 @@ func RecentFiftyCustomers() (customers []CustomerOverview, err error) {
 
 //TODO limit results to 50
 func FindCustomersByName(name string) (customers []CustomerOverview, err error) {
-	stmt, err := db.Prepare(`SELECT *
+	stmt, err := db.Prepare(`SELECT id, name, phone, status, level
 						   	 FROM Customer
 						   	 WHERE Customer.name LIKE ?`)
 	if err != nil {
