@@ -59,10 +59,20 @@ func customerListByName(req *http.Request, result map[string]interface{}) {
 }
 
 func addNewCustomer(req *http.Request, result map[string]interface{}) {
-	params, err := getParams([]string{"name", "phone number", "level"}, req)
+	params, err := getParams(req,
+		param{"name", "str"},
+		param{"phone number", "str"},
+		param{"level", "int"})
+
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error Adding New Customer")
 	}
+
+	// level, err := strconv.Atoi(params["level"]) //Atoi shortcut for ParseInt(s,10,0)
+	// if err != nil {
+	// 	result["error"] = stringifyErr(err, "Error Adding New Customer")
+	// 	return
+	// }
 
 	log.Println(params)
 	// if name == "" {
@@ -76,21 +86,43 @@ func availableKeyfobs(req *http.Request, result map[string]string) {
 
 }
 
-func getParams(paramList []string, req *http.Request) (params map[string]string, err error) {
-	params = make(map[string]string)
+//used for get Params arguments. Only supports ints and strings, add support for
+//checking things like phone numbers
+type param struct {
+	Name string
+	Type string
+}
+
+func getParams(req *http.Request, paramList ...param) (params map[string]interface{}, err error) {
+	params = make(map[string]interface{})
 	blanks := ""
+	notInts := ""
 
 	for _, p := range paramList {
-		param := req.FormValue(p)
+		param := req.FormValue(p.Name)
 		if param == "" {
-			blanks = blanks + " " + p
+			blanks = blanks + " " + p.Name
+			continue
+		}
+
+		if p.Type == "int" {
+			num, errr := strconv.Atoi(param) //Atoi shortcut for ParseInt(s,10,0)
+			if errr != nil {
+				notInts = notInts + " " + p.Name
+				continue
+			}
+			params[p.Name] = num
 		} else {
-			params[p] = req.FormValue(p)
+			params[p.Name] = param
 		}
 	}
 
 	if blanks != "" {
 		err = errors.New("These fields cannot be blank:" + blanks)
+	}
+
+	if notInts != "" { //TODO modify so it prints blank for nil err instead of <nil>
+		err = errors.New(fmt.Sprintf("%v. These fields must be numbers:%s", err, notInts))
 	}
 
 	return
