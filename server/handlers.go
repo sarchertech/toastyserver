@@ -59,18 +59,41 @@ func customerListByName(req *http.Request, result map[string]interface{}) {
 }
 
 func addNewCustomer(req *http.Request, result map[string]interface{}) {
-	name := req.FormValue("CustomerName")
-	//name := req.FormValue("CustomerName")
-
-	if name == "" {
-		err := errors.New("CustomerName param blank")
-		result["error"] = stringifyErr(err, "customerListByName()")
-		return
+	params, err := getParams([]string{"name", "phone number", "level"}, req)
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Adding New Customer")
 	}
+
+	log.Println(params)
+	// if name == "" {
+	// 	err := errors.New("CustomerName param blank")
+	// 	result["error"] = stringifyErr(err, "customerListByName()")
+	// 	return
+	// }
 }
 
 func availableKeyfobs(req *http.Request, result map[string]string) {
 
+}
+
+func getParams(paramList []string, req *http.Request) (params map[string]string, err error) {
+	params = make(map[string]string)
+	blanks := ""
+
+	for _, p := range paramList {
+		param := req.FormValue(p)
+		if param == "" {
+			blanks = blanks + " " + p
+		} else {
+			params[p] = req.FormValue(p)
+		}
+	}
+
+	if blanks != "" {
+		err = errors.New("These fields cannot be blank:" + blanks)
+	}
+
+	return
 }
 
 //This is required because errors default strinfigy method: Error()
