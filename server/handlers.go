@@ -15,16 +15,15 @@ import (
 //result["error"] = ""
 
 func employeeLogin(req *http.Request, result map[string]interface{}) {
-	keyNum := req.FormValue("KeyfobNumber")
-	keyNumInt, err := strconv.Atoi(keyNum) //Atoi shortcut for ParseInt(s,10,0)
+	params, err := getParams(req, param{"keyNum", "int"})
 	if err != nil {
-		result["error"] = stringifyErr(err, "employeeLogin()")
+		result["error"] = stringifyErr(err, "Error Logging In")
 		return
 	}
 
-	name, err := database.FindEmployee(keyNumInt)
+	name, err := database.FindEmployee(params["keyNum"].(int))
 	if err != nil {
-		result["error"] = stringifyErr(err, "employeeLogin()")
+		result["error"] = stringifyErr(err, "Error Logging In")
 		return
 	}
 
@@ -34,7 +33,7 @@ func employeeLogin(req *http.Request, result map[string]interface{}) {
 func customerList(req *http.Request, result map[string]interface{}) {
 	customers, err := database.RecentFiftyCustomers()
 	if err != nil {
-		result["error"] = stringifyErr(err, "customerList()")
+		result["error"] = stringifyErr(err, "Error Displaying Customer List")
 		return
 	}
 
@@ -42,16 +41,15 @@ func customerList(req *http.Request, result map[string]interface{}) {
 }
 
 func customerListByName(req *http.Request, result map[string]interface{}) {
-	name := req.FormValue("CustomerName")
-	if name == "" {
-		err := errors.New("CustomerName param blank")
-		result["error"] = stringifyErr(err, "customerListByName()")
+	params, err := getParams(req, param{"name", "str"})
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Searching Customers")
 		return
 	}
 
-	customers, err := database.FindCustomersByName(name)
+	customers, err := database.FindCustomersByName(params["name"].(string))
 	if err != nil {
-		result["error"] = stringifyErr(err, "customerListByName()")
+		result["error"] = stringifyErr(err, "Error Searching Customers")
 		return
 	}
 
@@ -66,6 +64,7 @@ func addNewCustomer(req *http.Request, result map[string]interface{}) {
 
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error Adding New Customer")
+		return
 	}
 
 	// level, err := strconv.Atoi(params["level"]) //Atoi shortcut for ParseInt(s,10,0)
