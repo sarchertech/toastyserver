@@ -10,93 +10,66 @@ import (
 	"strconv"
 )
 
-//http handlers
-
-// func helloServer(w http.ResponseWriter, req *http.Request) {
-// 	type Message struct {
-// 		Name           string
-// 		CustomerNumber string
-// 		Level          int8
-// 		Message        string
-// 	}
-
-// 	qString := req.FormValue("CustomerNumber")
-
-// 	var m Message
-
-// 	if qString == "120121" {
-// 		m = Message{"Bob Tanner", "120121", 3, ""}
-// 	} else {
-// 		m = Message{"Unkown", "", 0, "Can't find customer with that number"}
-// 	}
-
-// 	b, _ := json.Marshal(m)
-
-// 	//w.Header().Set("Content-Type", "application/json")
-
-// 	//qString := req.FormValue("butt")
-
-// 	//io.WriteString(w, string(b))
-// 	w.Write(b)
-// }
-
 //http handlers--result should be returned as a hashmap with an
 //"error" key, and a data key. Example: result["name"] = "jane",
 //result["error"] = ""
 
-func employeeLogin(req *http.Request, result *map[string]interface{}) {
+func employeeLogin(req *http.Request, result map[string]interface{}) {
 	keyNum := req.FormValue("KeyfobNumber")
 	keyNumInt, err := strconv.Atoi(keyNum) //Atoi shortcut for ParseInt(s,10,0)
 	if err != nil {
-		(*result)["error"] = stringifyErr(err, "employeeLogin()")
+		result["error"] = stringifyErr(err, "employeeLogin()")
 		return
 	}
 
-	data, err := database.FindEmployee(keyNumInt)
+	name, err := database.FindEmployee(keyNumInt)
 	if err != nil {
-		(*result)["error"] = stringifyErr(err, "employeeLogin()")
+		result["error"] = stringifyErr(err, "employeeLogin()")
 		return
 	}
 
-	(*result)["name"] = data
+	result["name"] = name
 }
 
-func customerList(req *http.Request, result *map[string]interface{}) {
-	data, err := database.RecentFiftyCustomers()
+func customerList(req *http.Request, result map[string]interface{}) {
+	customers, err := database.RecentFiftyCustomers()
 	if err != nil {
-		(*result)["error"] = stringifyErr(err, "customerList()")
+		result["error"] = stringifyErr(err, "customerList()")
 		return
 	}
 
-	(*result)["customers"] = data
+	result["customers"] = customers
 }
 
-func customerListByName(req *http.Request, result *map[string]interface{}) {
+func customerListByName(req *http.Request, result map[string]interface{}) {
 	name := req.FormValue("CustomerName")
 	if name == "" {
 		err := errors.New("CustomerName param blank")
-		(*result)["error"] = stringifyErr(err, "customerListByName()")
+		result["error"] = stringifyErr(err, "customerListByName()")
 		return
 	}
 
-	data, err := database.FindCustomersByName(name)
+	customers, err := database.FindCustomersByName(name)
 	if err != nil {
-		(*result)["error"] = stringifyErr(err, "customerListByName()")
+		result["error"] = stringifyErr(err, "customerListByName()")
 		return
 	}
 
-	(*result)["customers"] = data
+	result["customers"] = customers
 }
 
-func customerDetails(req *http.Request, result *map[string]string) {
+func addNewCustomer(req *http.Request, result map[string]interface{}) {
+	name := req.FormValue("CustomerName")
+	//name := req.FormValue("CustomerName")
 
+	if name == "" {
+		err := errors.New("CustomerName param blank")
+		result["error"] = stringifyErr(err, "customerListByName()")
+		return
+	}
 }
 
-func addNewCustomer(req *http.Request, result *map[string]string) {
-
-}
-
-func availableKeyfobs(req *http.Request, result *map[string]string) {
+func availableKeyfobs(req *http.Request, result map[string]string) {
 
 }
 
