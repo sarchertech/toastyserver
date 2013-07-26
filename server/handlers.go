@@ -1,7 +1,6 @@
 package server
 
 import (
-	//"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/learc83/toastyserver/database"
@@ -60,29 +59,35 @@ func addNewCustomer(req *http.Request, result map[string]interface{}) {
 	params, err := getParams(req,
 		param{"name", "str"},
 		param{"phone number", "str"},
-		param{"level", "int"})
+		param{"level", "int"},
+		param{"keyfob number", "int"})
 
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error Adding New Customer")
 		return
 	}
 
-	// level, err := strconv.Atoi(params["level"]) //Atoi shortcut for ParseInt(s,10,0)
-	// if err != nil {
-	// 	result["error"] = stringifyErr(err, "Error Adding New Customer")
-	// 	return
-	// }
+	err = database.CreateCustomer(
+		params["name"].(string),
+		params["phone number"].(string),
+		params["level"].(int),
+		params["keyfob number"].(int))
 
-	log.Println(params)
-	// if name == "" {
-	// 	err := errors.New("CustomerName param blank")
-	// 	result["error"] = stringifyErr(err, "customerListByName()")
-	// 	return
-	// }
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Adding New Customer")
+		return
+	}
 }
 
-func availableKeyfobs(req *http.Request, result map[string]string) {
+func availableCustomerKeyfobs(req *http.Request, result map[string]interface{}) {
+	keyfobsTen, keyfobsHex, err := database.AvailableCustomerKeyfobs()
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Finding Available Customer Keyfobs")
+		return
+	}
 
+	result["keyfobsTen"] = keyfobsTen
+	result["keyfobsHex"] = keyfobsHex
 }
 
 //used for get Params arguments. Only supports ints and strings, add support for
@@ -100,14 +105,14 @@ func getParams(req *http.Request, paramList ...param) (params map[string]interfa
 	for _, p := range paramList {
 		param := req.FormValue(p.Name)
 		if param == "" {
-			blanks = blanks + " " + p.Name
+			blanks = blanks + " " + p.Name + ","
 			continue
 		}
 
 		if p.Type == "int" {
 			num, errr := strconv.Atoi(param) //Atoi shortcut for ParseInt(s,10,0)
 			if errr != nil {
-				notInts = notInts + " " + p.Name
+				notInts = notInts + " " + p.Name + ","
 				continue
 			}
 			params[p.Name] = num

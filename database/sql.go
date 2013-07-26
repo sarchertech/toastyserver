@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 
 	//blank identifer because we only care about side effects
 	//from initialization not calling anything in pkg directly
@@ -87,6 +88,58 @@ func FindCustomersByName(name string) (customers []CustomerOverview, err error) 
 		}
 
 		customers = append(customers, c)
+	}
+	if rows.Err() != nil {
+		err = rows.Err()
+		return
+	}
+	rows.Close()
+
+	return
+}
+
+//TODO possible race conditions, check that keyfob still available and lock keyfobs
+func CreateCustomer(name string, phone string, level int, keyfob int) (err error) {
+	stmt, err := db.Prepare(`INSERT INTO Customer(id, name, phone, status, level, fob_num)
+		                     values(?, ?, ?, ?, ?, ?)`)
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(nil, name, phone, true, level, keyfob) //insert null into id to auto incrment
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	return
+}
+
+func AvailableCustomerKeyfobs() (base10 []int32, base16 []string, err error) {
+	rows, err := db.Query(`SELECT Keyfob.fob_num
+						   FROM Keyfob
+						   LEFT OUTER JOIN Customer
+						   ON Keyfob.fob_num = Customer.fob_num
+						   WHERE Customer.id IS null
+						   AND Keyfob.admin = 0`)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	//equivalent to while rows.Next() == true
+	for rows.Next() {
+		var i int32
+		err = rows.Scan(&i)
+		if err != nil {
+			return
+		}
+
+		base10 = append(base10, i)
+		base16 = append(base16, fmt.Sprintf("%X", i))
 	}
 	if rows.Err() != nil {
 		err = rows.Err()

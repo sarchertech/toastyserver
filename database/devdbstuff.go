@@ -191,7 +191,7 @@ func fakeNumbers(number int) []int32 {
 	var numList []int32
 
 	for i := 0; i < number; i++ {
-		numList = append(numList, r.Int31())
+		numList = append(numList, r.Int31n(1048500))
 	}
 
 	return numList
