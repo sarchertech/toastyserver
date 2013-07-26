@@ -3,10 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-
 	//blank identifer because we only care about side effects
-	//from initialization not calling anything in pkg directly
-	//"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 )
@@ -48,13 +45,10 @@ func RecentFiftyCustomers() (customers []CustomerOverview, err error) {
 	}
 	defer rows.Close()
 
-	//var customers []CustomerOverview
-
 	//equivalent to while rows.Next() == true
 	for rows.Next() {
 		var c CustomerOverview
 		rows.Scan(&c.Id, &c.Name, &c.Phone, &c.Status, &c.Level)
-		//fmt.Println(customer.Name)
 
 		customers = append(customers, c)
 	}

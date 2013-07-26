@@ -5,7 +5,6 @@ package database
 func schema() map[string]string {
 	s := make(map[string]string)
 
-	//integer primary key auto increments
 	//insert Null into id to auto increment
 	s["Customer"] = `(id integer primary key,
 	 		 		  name text not null,
@@ -14,9 +13,8 @@ func schema() map[string]string {
 			 		  level integer not null,
 			 		  fob_num integer not null unique)`
 
-	//TODO need to enforce Uniqueness on name
 	s["Employee"] = `(id integer primary key,
-	 		 		  name text not null,
+	 		 		  name text not null unique,
 			 		  level integer not null,
 			 		  fob_num integer not null unique)`
 

@@ -11,7 +11,7 @@ import (
 	//"time"
 )
 
-const randSeed int64 = 56334
+const randSeed int64 = 5635514
 
 var r *rand.Rand
 
@@ -165,7 +165,10 @@ func fakeNames(number int) []string {
 	var nameList []string
 
 	for i := 0; i < number; i++ {
-		nameList = append(nameList, first[r.Intn(len(first))]+" "+last[r.Intn(len(last))])
+		name := first[r.Intn(len(first))] + " " + last[r.Intn(len(last))]
+		nameList = append(nameList, name)
+
+		log.Println(name)
 	}
 
 	return nameList
