@@ -6,20 +6,20 @@ func schema() map[string]string {
 	s := make(map[string]string)
 
 	//insert Null into id to auto increment
-	s["Customer"] = `(id integer primary key,
-	 		 		  name text not null,
-	 		 		  phone text not null,
-			 		  status boolean not null,
-			 		  level integer not null,
-			 		  fob_num integer not null unique)`
+	s["Customer"] = `(Id integer primary key,
+	 		 		  Name text not null,
+	 		 		  Phone text not null,
+			 		  Status boolean not null,
+			 		  Level integer not null,
+			 		  Fob_num integer not null unique)`
 
-	s["Employee"] = `(id integer primary key,
-	 		 		  name text not null unique,
-			 		  level integer not null,
-			 		  fob_num integer not null unique)`
+	s["Employee"] = `(Id integer primary key,
+	 		 		  Name text not null unique,
+			 		  Level integer not null,
+			 		  Fob_num integer not null unique)`
 
-	s["Keyfob"] = `(fob_num integer not null primary key,
-					admin boolean not null)`
+	s["Keyfob"] = `(Fob_num integer not null primary key,
+					Admin boolean not null)`
 
 	return s
 }

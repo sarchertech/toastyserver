@@ -21,6 +21,12 @@ func OpenDBDevMode() {
 	OpenDB()
 	upSchema()
 	addDevData()
+
+	keyfob := Keyfob{Fob_num: 12107728, Admin: true}
+	CreateRecord(keyfob, false)
+
+	employee := Employee{Name: "Seth", Level: 3, Fob_num: 12107728}
+	CreateRecord(employee, true)
 }
 
 func addDevData() {
@@ -30,6 +36,8 @@ func addDevData() {
 	fakeKeyNums := addFakeKeyfobs()
 	addFakeCustomers(fakeKeyNums)
 	addFakeEmployees(fakeKeyNums)
+
+	//Add
 }
 
 func addFakeCustomers(fakeKeyNums []int32) {
@@ -167,8 +175,6 @@ func fakeNames(number int) []string {
 	for i := 0; i < number; i++ {
 		name := first[r.Intn(len(first))] + " " + last[r.Intn(len(last))]
 		nameList = append(nameList, name)
-
-		log.Println(name)
 	}
 
 	return nameList
