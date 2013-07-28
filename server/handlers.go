@@ -67,11 +67,11 @@ func addNewCustomer(req *http.Request, result map[string]interface{}) {
 		return
 	}
 
-	err = database.CreateCustomer(
-		params["name"].(string),
-		params["phone number"].(string),
-		params["level"].(int),
-		params["keyfob number"].(int))
+	customer := database.Customer{Name: params["name"].(string),
+		Phone: params["phone number"].(string), Status: true,
+		Level: params["level"].(int), Fob_num: params["keyfob number"].(int)}
+
+	err = database.CreateRecord(customer, true)
 
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error Adding New Customer")
@@ -97,6 +97,8 @@ type param struct {
 	Type string
 }
 
+//TODO redo this function to take advantage of structs defined in database/structs.go
+//and to use reflection. See CreateRecord function in database/sql.go
 func getParams(req *http.Request, paramList ...param) (params map[string]interface{}, err error) {
 	params = make(map[string]interface{})
 	blanks := ""

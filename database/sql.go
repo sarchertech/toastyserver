@@ -10,6 +10,7 @@ import (
 	"log"
 )
 
+//TODO abstract out with FindRecord just like CreateRecord
 func FindEmployee(keyNum int) (name string, err error) {
 	var stmt *sql.Stmt
 	stmt, err = db.Prepare(`SELECT Name
@@ -31,6 +32,7 @@ func FindEmployee(keyNum int) (name string, err error) {
 
 //TODO limit results to 50
 //Work on error for no rows
+//TODO abstract out with ListRecords just like CreateRecord
 func RecentFiftyCustomers() (customers []Customer, err error) {
 	rows, err := db.Query(`SELECT Id, Name, Phone, Status, Level
 						   FROM Customer`)
@@ -52,6 +54,7 @@ func RecentFiftyCustomers() (customers []Customer, err error) {
 }
 
 //TODO limit results to 50
+//TODO abstract out with ListRecords just like CreateRecord
 func FindCustomersByName(name string) (customers []Customer, err error) {
 	stmt, err := db.Prepare(`SELECT Id, Name, Phone, Status, Level
 						   	 FROM Customer
@@ -86,50 +89,11 @@ func FindCustomersByName(name string) (customers []Customer, err error) {
 	return
 }
 
-//TODO possible race conditions, check that keyfob still available and lock keyfobs
-func CreateCustomer(name string, phone string, level int, keyfob int) (err error) {
-	stmt, err := db.Prepare(`INSERT INTO Customer(Id, Name, Phone, Status, Level, Fob_num)
-		                     values(?, ?, ?, ?, ?, ?)`)
-
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(nil, name, phone, true, level, keyfob) //insert null into id to auto incrment
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	return
-}
-
-//TODO possible race conditions, check that keyfob still available and lock keyfobs
-func CreateEmployee(name string, level int, keyfob int) (err error) {
-	stmt, err := db.Prepare(`INSERT INTO Employee(Id, Name, Level, Fob_num)
-		                     values(?, ?, ?, ?)`)
-
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(nil, name, level, keyfob) //insert null into id to auto incrment
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	return
-}
-
 //creates a record from an initalized struct, set autoIncrement to true if the
 //first field defined in the struct is an autoincrement field
 //Uses reflection to set the Table name to the Type name of the struct, and to get
 //the names and values of an arbitrary number of fields
+//TODO check for race condition when adding new customer--make sure keyfob exists
 func CreateRecord(record interface{}, autoIncrement bool) (err error) {
 	t := reflect.TypeOf(record)
 	v := reflect.ValueOf(record)
