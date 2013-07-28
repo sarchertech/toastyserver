@@ -14,13 +14,13 @@ import (
 //result["error"] = ""
 
 func employeeLogin(req *http.Request, result map[string]interface{}) {
-	params, err := getParams(req, param{"keyNum", "int"})
+	params, err := getParams(req, param{"Fob_num", "int"})
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error Logging In")
 		return
 	}
 
-	name, err := database.FindEmployee(params["keyNum"].(int))
+	name, err := database.FindEmployee(params["Fob_num"].(int))
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error Logging In")
 		return

@@ -10,6 +10,8 @@ import (
 	"log"
 )
 
+//TODO log calling function when logging sql errors
+
 //TODO abstract out with FindRecord just like CreateRecord
 func FindEmployee(keyNum int) (name string, err error) {
 	var stmt *sql.Stmt
