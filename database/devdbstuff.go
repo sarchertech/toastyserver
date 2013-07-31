@@ -11,7 +11,7 @@ import (
 	//"time"
 )
 
-const randSeed int64 = 5635514
+const randSeed int64 = 56355145
 
 var r *rand.Rand
 
