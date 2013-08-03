@@ -27,6 +27,13 @@ func OpenDBDevMode() {
 
 	employee := Employee{Name: "Seth", Level: 3, Fob_num: 12107728}
 	CreateRecord(employee, true)
+
+	keyfob2 := Keyfob{Fob_num: 9873, Admin: true}
+	CreateRecord(keyfob2, false)
+
+	customer := Customer{Name: "Jane Tanner", Level: 3, Fob_num: 9873,
+		Phone: "770-949-1622", Status: true}
+	CreateRecord(customer, true)
 }
 
 func addDevData() {

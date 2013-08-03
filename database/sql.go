@@ -14,14 +14,32 @@ import (
 
 func FindEmployee(keyNum int) (name string, err error) {
 	stmt, err := db.Prepare(`SELECT Name
-							FROM Employee
-							WHERE Employee.fob_num=?`)
+							 FROM Employee
+							 WHERE Employee.Fob_num=?`)
 	if err != nil {
 		return
 	}
 	defer stmt.Close()
 
 	err = stmt.QueryRow(keyNum).Scan(&name)
+	if err == sql.ErrNoRows {
+		log.Println(err)
+		err = nil
+	}
+
+	return
+}
+
+func FindCustomer(keyNum int) (name string, stat bool, lvl int, err error) {
+	stmt, err := db.Prepare(`SELECT Name, Status, Level
+							 FROM Customer
+							 WHERE Customer.Fob_num=?`)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	err = stmt.QueryRow(keyNum).Scan(&name, &stat, &lvl)
 	if err == sql.ErrNoRows {
 		log.Println(err)
 		err = nil
@@ -58,7 +76,7 @@ func RecentFiftyCustomers() (customers []Customer, err error) {
 func FindCustomersByName(name string) (customers []Customer, err error) {
 	stmt, err := db.Prepare(`SELECT Id, Name, Phone, Status, Level
 						   	 FROM Customer
-						   	 WHERE Customer.name LIKE ?`)
+						   	 WHERE Customer.Name LIKE ?`)
 	if err != nil {
 		return
 	}
@@ -137,7 +155,7 @@ func AvailableCustomerKeyfobs() (base10 []int32, base16 []string, err error) {
 	rows, err := db.Query(`SELECT Keyfob.Fob_num
 						   FROM Keyfob
 						   LEFT OUTER JOIN Customer
-						   ON Keyfob.fob_num = Customer.Fob_num
+						   ON Keyfob.Fob_num = Customer.Fob_num
 						   WHERE Customer.Id IS null
 						   AND Keyfob.Admin = 0`)
 	if err != nil {
