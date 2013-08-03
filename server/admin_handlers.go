@@ -9,6 +9,8 @@ import (
 //"error" key, and a data key. Example: result["name"] = "jane",
 //result["error"] = ""
 
+//TODO replace stringifyErr with fmt.ErrorF() now that I know it exists
+
 func employeeLogin(req *http.Request, result map[string]interface{}) {
 	params, err := getParams(req, param{"Fob_num", "int"})
 	if err != nil {

@@ -12,10 +12,8 @@ import (
 
 //TODO log calling function when logging sql errors
 
-//TODO abstract out with FindRecord just like CreateRecord
 func FindEmployee(keyNum int) (name string, err error) {
-	var stmt *sql.Stmt
-	stmt, err = db.Prepare(`SELECT Name
+	stmt, err := db.Prepare(`SELECT Name
 							FROM Employee
 							WHERE Employee.fob_num=?`)
 	if err != nil {
