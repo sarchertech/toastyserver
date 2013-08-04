@@ -20,3 +20,10 @@ type Keyfob struct {
 	Fob_num int
 	Admin   bool
 }
+
+type Bed struct {
+	Bed_num  int
+	Level    int
+	Max_time int
+	Name     string
+}

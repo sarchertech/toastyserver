@@ -21,5 +21,10 @@ func schema() map[string]string {
 	s["Keyfob"] = `(Fob_num integer not null primary key,
 					Admin boolean not null)`
 
+	s["Bed"] = `(Bed_num integer not null primary key,
+				 Level integer not null,
+				 Max_time integer not null,
+				 Name text not null)`
+
 	return s
 }

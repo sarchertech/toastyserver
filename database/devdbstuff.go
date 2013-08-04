@@ -43,6 +43,7 @@ func addDevData() {
 	fakeKeyNums := addFakeKeyfobs()
 	addFakeCustomers(fakeKeyNums)
 	addFakeEmployees(fakeKeyNums)
+	addFakeBeds()
 
 	//Add
 }
@@ -167,6 +168,27 @@ func addFakeKeyfobs() (fakeNums []int32) {
 	tx.Commit()
 
 	return
+}
+
+func addFakeBeds() {
+
+	employee := Employee{Name: "Seth", Level: 3, Fob_num: 12107728}
+	CreateRecord(employee, true)
+
+	for i := 0; i < 5; i++ {
+		bed := Bed{Level: 1, Max_time: 15, Name: "Sundash 232"}
+		CreateRecord(bed, true)
+	}
+
+	for i := 0; i < 3; i++ {
+		bed := Bed{Level: 2, Max_time: 12, Name: "Ameribed 64"}
+		CreateRecord(bed, true)
+	}
+
+	for i := 0; i < 2; i++ {
+		bed := Bed{Level: 3, Max_time: 10, Name: "Bad Ass Bed"}
+		CreateRecord(bed, true)
+	}
 }
 
 func fakeNames(number int) []string {
