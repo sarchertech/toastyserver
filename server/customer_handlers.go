@@ -12,17 +12,33 @@ import (
 func customerLogin(req *http.Request, result map[string]interface{}) {
 	params, err := getParams(req, param{"Fob_num", "int"})
 	if err != nil {
-		result["error"] = stringifyErr(err, "Error Logging In")
+		result["error"] = stringifyErr(err, "Error With Customer Login")
 		return
 	}
 
 	name, stat, lvl, err := database.FindCustomer(params["Fob_num"].(int))
 	if err != nil {
-		result["error"] = stringifyErr(err, "Error Logging In")
+		result["error"] = stringifyErr(err, "Error With Customer Login")
 		return
 
 	}
 	result["name"] = name
 	result["status"] = stat
 	result["level"] = lvl
+}
+
+func bedStatus(req *http.Request, result map[string]interface{}) {
+	params, err := getParams(req, param{"Level", "int"})
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Checking Customer Bed Status")
+		return
+	}
+
+	beds, err := database.BedsByLevel(params["Level"].(int))
+	if err != nil {
+		result["error"] = stringifyErr(err, "rror Checking Customer Bed Status")
+		return
+	}
+
+	result["beds"] = beds
 }

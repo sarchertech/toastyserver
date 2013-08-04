@@ -67,7 +67,7 @@ func getParams(req *http.Request, paramList ...param) (params map[string]interfa
 	}
 
 	if notInts != "" { //TODO modify so it prints blank for nil err instead of <nil>
-		err = errors.New(fmt.Sprintf("%v. These fields must be numbers:%s", err, notInts))
+		err = errors.New(fmt.Sprintf("These fields must be numbers:%s", notInts))
 	}
 
 	return

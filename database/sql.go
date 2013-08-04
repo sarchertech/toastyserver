@@ -107,6 +107,40 @@ func FindCustomersByName(name string) (customers []Customer, err error) {
 	return
 }
 
+func BedsByLevel(lvl int) (beds []Bed, err error) {
+	stmt, err := db.Prepare(`SELECT Bed_num, Level, Max_time, Name
+						     FROM Bed
+						     WHERE Level = ?`)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(lvl)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	//equivalent to while rows.Next() == true
+	for rows.Next() {
+		var b Bed
+		err = rows.Scan(&b.Bed_num, &b.Level, &b.Max_time, &b.Name)
+		if err != nil {
+			return
+		}
+
+		beds = append(beds, b)
+	}
+	if rows.Err() != nil {
+		err = rows.Err()
+		return
+	}
+	rows.Close()
+
+	return
+}
+
 //creates a record from an initalized struct, set autoIncrement to true if the
 //first field defined in the struct is an autoincrement field
 //Uses reflection to set the Table name to the Type name of the struct, and to get
