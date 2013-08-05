@@ -23,17 +23,17 @@ func OpenDBDevMode() {
 	addDevData()
 
 	keyfob := Keyfob{Fob_num: 12107728, Admin: true}
-	CreateRecord(keyfob, false)
+	CreateRecord(keyfob)
 
 	employee := Employee{Name: "Seth", Level: 3, Fob_num: 12107728}
-	CreateRecord(employee, true)
+	CreateRecord(employee)
 
-	keyfob2 := Keyfob{Fob_num: 9873, Admin: true}
-	CreateRecord(keyfob2, false)
+	keyfob2 := Keyfob{Fob_num: 9873, Admin: false}
+	CreateRecord(keyfob2)
 
 	customer := Customer{Name: "Jane Tanner", Level: 3, Fob_num: 9873,
 		Phone: "770-949-1622", Status: true}
-	CreateRecord(customer, true)
+	CreateRecord(customer)
 }
 
 func addDevData() {
@@ -44,8 +44,6 @@ func addDevData() {
 	addFakeCustomers(fakeKeyNums)
 	addFakeEmployees(fakeKeyNums)
 	addFakeBeds()
-
-	//Add
 }
 
 func addFakeCustomers(fakeKeyNums []int32) {
@@ -171,23 +169,20 @@ func addFakeKeyfobs() (fakeNums []int32) {
 }
 
 func addFakeBeds() {
-
-	employee := Employee{Name: "Seth", Level: 3, Fob_num: 12107728}
-	CreateRecord(employee, true)
-
+	//Need to fix numbering, quick hax
 	for i := 0; i < 5; i++ {
-		bed := Bed{Level: 1, Max_time: 15, Name: "Sundash 232"}
-		CreateRecord(bed, true)
+		bed := Bed{Bed_num: i + 1, Level: 1, Max_time: 15, Name: "Sundash 232"}
+		CreateRecord(bed)
 	}
 
 	for i := 0; i < 3; i++ {
-		bed := Bed{Level: 2, Max_time: 12, Name: "Ameribed 64"}
-		CreateRecord(bed, true)
+		bed := Bed{Bed_num: i + 6, Level: 2, Max_time: 12, Name: "Ameribed 64"}
+		CreateRecord(bed)
 	}
 
 	for i := 0; i < 2; i++ {
-		bed := Bed{Level: 3, Max_time: 10, Name: "Bad Ass Bed"}
-		CreateRecord(bed, true)
+		bed := Bed{Bed_num: i + 9, Level: 3, Max_time: 10, Name: "Bad Ass Bed"}
+		CreateRecord(bed)
 	}
 }
 

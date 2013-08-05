@@ -2,6 +2,9 @@ package server
 
 import (
 	"github.com/learc83/toastyserver/database"
+	"github.com/learc83/toastyserver/tmak"
+	"log"
+	//"github.com/learc83/toastyserver/tmak"
 	"net/http"
 )
 
@@ -39,6 +42,9 @@ func bedStatus(req *http.Request, result map[string]interface{}) {
 		result["error"] = stringifyErr(err, "rror Checking Customer Bed Status")
 		return
 	}
+	log.Println(beds)
+
+	tmak.BedStatuses(beds)
 
 	result["beds"] = beds
 }

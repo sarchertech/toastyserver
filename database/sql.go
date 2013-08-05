@@ -3,11 +3,11 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"reflect"
 	"strings"
 	//blank identifer because we only care about side effects
 	_ "github.com/mattn/go-sqlite3"
-	"log"
 )
 
 //TODO log calling function when logging sql errors
@@ -146,24 +146,37 @@ func BedsByLevel(lvl int) (beds []Bed, err error) {
 //Uses reflection to set the Table name to the Type name of the struct, and to get
 //the names and values of an arbitrary number of fields
 //TODO check for race condition when adding new customer--make sure keyfob exists
-func CreateRecord(record interface{}, autoIncrement bool) (err error) {
+func CreateRecord(record interface{}) (err error) {
 	t := reflect.TypeOf(record)
 	v := reflect.ValueOf(record)
 
 	var fields []string
 	var values []interface{}
+	var qMarkSum int
 
 	for i := 0; i < t.NumField(); i++ {
+		//skip if StructTag metadata says non DB backed field
+		if t.Field(i).Tag.Get("db") == "false" {
+			continue
+		}
+
 		fields = append(fields, t.Field(i).Name)
-		values = append(values, v.Field(i).Interface())
+		qMarkSum = qMarkSum + 1
+
+		//set value to nill if auto increment field
+		if t.Field(i).Tag.Get("db") == "autoInc" {
+			values = append(values, nil)
+		} else {
+			values = append(values, v.Field(i).Interface())
+		}
+		//qMarkSum = qMarkSum + 1
 	}
 
 	fieldStr := strings.Join(fields, ", ")
-	qMarks := strings.Repeat("?,", t.NumField()-1) + "?"
+	qMarks := strings.Repeat("?,", qMarkSum-1) + "?" //-1 for last ? with no comma
 
 	sqls := fmt.Sprintf(`INSERT INTO %s(%s)
 		                 values(%s)`, t.Name(), fieldStr, qMarks)
-	log.Println(sqls)
 
 	stmt, err := db.Prepare(sqls)
 	if err != nil {
@@ -171,10 +184,6 @@ func CreateRecord(record interface{}, autoIncrement bool) (err error) {
 		return
 	}
 	defer stmt.Close()
-
-	if autoIncrement {
-		values[0] = nil //set first value to nil so sqlite will autoincrement
-	}
 
 	_, err = stmt.Exec(values...)
 	if err != nil {

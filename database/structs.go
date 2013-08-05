@@ -1,7 +1,10 @@
 package database
 
+//check documentation for optional StructTag metadata
+//TODO add documentation on StructTag metadata
+
 type Customer struct {
-	Id      int
+	Id      int `db:"autoInc"`
 	Name    string
 	Phone   string
 	Status  bool
@@ -10,7 +13,7 @@ type Customer struct {
 }
 
 type Employee struct {
-	Id      int
+	Id      int `db:"autoInc"`
 	Name    string
 	Level   int
 	Fob_num int
@@ -26,4 +29,5 @@ type Bed struct {
 	Level    int
 	Max_time int
 	Name     string
+	Status   bool `db:"false"` //not DB backed
 }

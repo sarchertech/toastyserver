@@ -69,7 +69,7 @@ func addNewCustomer(req *http.Request, result map[string]interface{}) {
 		Phone: params["phone number"].(string), Status: true,
 		Level: params["level"].(int), Fob_num: params["keyfob number"].(int)}
 
-	err = database.CreateRecord(customer, true)
+	err = database.CreateRecord(customer)
 
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error Adding New Customer")
