@@ -34,6 +34,10 @@ func OpenDBDevMode() {
 	customer := Customer{Name: "Jane Tanner", Level: 3, Fob_num: 9873,
 		Phone: "770-949-1622", Status: true}
 	CreateRecord(customer)
+
+	customer2 := Customer{Name: "Fred Tanner", Level: 3, Fob_num: 9871,
+		Phone: "770-949-1622", Status: false}
+	CreateRecord(customer2)
 }
 
 func addDevData() {
@@ -170,18 +174,18 @@ func addFakeKeyfobs() (fakeNums []int32) {
 
 func addFakeBeds() {
 	//Need to fix numbering, quick hax
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 10; i++ {
 		bed := Bed{Bed_num: i + 1, Level: 1, Max_time: 15, Name: "Sundash 232"}
 		CreateRecord(bed)
 	}
 
-	for i := 0; i < 3; i++ {
-		bed := Bed{Bed_num: i + 6, Level: 2, Max_time: 12, Name: "Ameribed 64"}
+	for i := 0; i < 5; i++ {
+		bed := Bed{Bed_num: i + 11, Level: 2, Max_time: 12, Name: "Ameribed 64"}
 		CreateRecord(bed)
 	}
 
 	for i := 0; i < 2; i++ {
-		bed := Bed{Bed_num: i + 9, Level: 3, Max_time: 10, Name: "Bad Ass Bed"}
+		bed := Bed{Bed_num: i + 16, Level: 3, Max_time: 10, Name: "Bad Ass Bed"}
 		CreateRecord(bed)
 	}
 }

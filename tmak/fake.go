@@ -7,7 +7,7 @@ import (
 //Side Effects: edits beds in place
 func BedStatuses(beds []database.Bed) (err error) {
 	for i := range beds {
-		beds[i].Status = true
+		beds[i].Status = !(i%3 == 0)
 	}
 
 	return

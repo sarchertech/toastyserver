@@ -53,6 +53,7 @@ func customerListByName(req *http.Request, result map[string]interface{}) {
 	result["customers"] = customers
 }
 
+//TODO enforce non-blank customer name string
 func addNewCustomer(req *http.Request, result map[string]interface{}) {
 	params, err := getParams(req,
 		param{"name", "str"},
