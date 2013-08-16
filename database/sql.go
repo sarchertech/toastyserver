@@ -30,8 +30,8 @@ func FindEmployee(keyNum int) (name string, err error) {
 	return
 }
 
-func FindCustomer(keyNum int) (name string, stat bool, lvl int, err error) {
-	stmt, err := db.Prepare(`SELECT Name, Status, Level
+func FindCustomer(keyNum int) (id int, name string, stat bool, lvl int, err error) {
+	stmt, err := db.Prepare(`SELECT Id, Name, Status, Level
 							 FROM Customer
 							 WHERE Customer.Fob_num=?`)
 	if err != nil {
@@ -39,7 +39,7 @@ func FindCustomer(keyNum int) (name string, stat bool, lvl int, err error) {
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow(keyNum).Scan(&name, &stat, &lvl)
+	err = stmt.QueryRow(keyNum).Scan(&id, &name, &stat, &lvl)
 	if err == sql.ErrNoRows {
 		log.Println(err)
 		err = nil

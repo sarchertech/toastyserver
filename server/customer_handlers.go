@@ -19,12 +19,14 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 		return
 	}
 
-	name, stat, lvl, err := database.FindCustomer(params["Fob_num"].(int))
+	id, name, stat, lvl, err := database.FindCustomer(params["Fob_num"].(int))
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error With Customer Login")
 		return
 
 	}
+
+	result["id"] = id
 	result["name"] = name
 	result["status"] = stat
 	result["level"] = lvl
@@ -48,3 +50,10 @@ func bedStatus(req *http.Request, result map[string]interface{}) {
 
 	result["beds"] = beds
 }
+
+// func startBed(req *http.Request, result map[string]interface{}) {
+// 	// params, err := getParams(req,
+// 	// 	param{"BedNum", "int"},
+// 	// 	param{"CustNum", "int"})
+
+// }
