@@ -10,8 +10,7 @@ func StartServer() {
 	//WARNING -- DevMode DELETES DB
 	database.OpenDBDevMode()
 
-	routes := getRoutes()
-	for key, value := range routes {
+	for key, value := range getRoutes() {
 		http.HandleFunc(key, handlerWrapper(value))
 	}
 
