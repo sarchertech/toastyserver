@@ -26,5 +26,10 @@ func schema() map[string]string {
 				 Max_time integer not null,
 				 Name text not null)`
 
+	s["Session"] = `(Id integer primary key,
+					 Bed_num integer not null,
+					 Customer_id integer not null,
+					 Time_stamp, integer not null)`
+
 	return s
 }

@@ -31,3 +31,10 @@ type Bed struct {
 	Name     string
 	Status   bool `db:"false"` //not DB backed
 }
+
+type Session struct {
+	Id          int `db:"autoInc"`
+	Bed_num     int
+	Customer_id int
+	Time_stamp  int
+}

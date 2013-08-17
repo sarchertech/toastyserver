@@ -6,6 +6,7 @@ import (
 	"log"
 	//"github.com/learc83/toastyserver/tmak"
 	"net/http"
+	"time"
 )
 
 //http handlers--result should be returned as a hashmap with an
@@ -51,9 +52,31 @@ func bedStatus(req *http.Request, result map[string]interface{}) {
 	result["beds"] = beds
 }
 
-// func startBed(req *http.Request, result map[string]interface{}) {
-// 	// params, err := getParams(req,
-// 	// 	param{"BedNum", "int"},
-// 	// 	param{"CustNum", "int"})
+func startBed(req *http.Request, result map[string]interface{}) {
+	params, err := getParams(req,
+		param{"bed_num", "int"},
+		param{"cust_num", "int"})
 
-// }
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Creating Session")
+		return
+	}
+
+	log.Println(params)
+
+	go func() {
+		time.Sleep(10 * 1e9)
+		log.Println("done")
+	}()
+
+	// session := database.Customer{Name: params["name"].(string),
+	// 	Phone: params["phone number"].(string), Status: true,
+	// 	Level: params["level"].(int), Fob_num: params["keyfob number"].(int)}
+
+	// err = database.CreateRecord(customer)
+
+	// if err != nil {
+	// 	result["error"] = stringifyErr(err, "Error Adding New Customer")
+	// 	return
+	// }
+}
