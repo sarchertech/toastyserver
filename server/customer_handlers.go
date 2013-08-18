@@ -4,9 +4,10 @@ import (
 	"github.com/learc83/toastyserver/database"
 	"github.com/learc83/toastyserver/tmak"
 	"log"
+	"time"
+
 	//"github.com/learc83/toastyserver/tmak"
 	"net/http"
-	"time"
 )
 
 //http handlers--result should be returned as a hashmap with an
@@ -64,19 +65,29 @@ func startBed(req *http.Request, result map[string]interface{}) {
 
 	log.Println(params)
 
+	//starts bed and creates session in the background b/c it may take a few seconds
+	//TODO try to start bed 3 or 4 times
 	go func() {
-		time.Sleep(10 * 1e9)
-		log.Println("done")
+		err := tmak.StartBed(params["bed_num"].(int))
+		if err != nil {
+			log.Println("Heeeeerrrree")
+			log.Println(err)
+			return
+		}
+
+		//TODO enforce foreign key constraints
+		session := database.Session{
+			Bed_num:     params["bed_num"].(int),
+			Customer_id: params["cust_num"].(int),
+			Time_stamp:  time.Now().Unix()}
+
+		err = database.CreateRecord(session)
+		if err != nil {
+			log.Print("No, heeerrrre")
+			log.Println(err)
+			return
+		}
+
+		log.Println("bed started, session created")
 	}()
-
-	// session := database.Customer{Name: params["name"].(string),
-	// 	Phone: params["phone number"].(string), Status: true,
-	// 	Level: params["level"].(int), Fob_num: params["keyfob number"].(int)}
-
-	// err = database.CreateRecord(customer)
-
-	// if err != nil {
-	// 	result["error"] = stringifyErr(err, "Error Adding New Customer")
-	// 	return
-	// }
 }
