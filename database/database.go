@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"os"
 	//blank identifer because we only care about side effects
 	//from initialization not calling anything in pkg directly
@@ -51,8 +52,20 @@ func CloseDB() {
 	db.Close()
 }
 
-func DeleteDB() {
+func DeleteDB() (err error) {
+	fmt.Print("!!!WARNING!!! Delete the database? YES or NO: ")
+
+	var str string
+
+	fmt.Scan(&str)
+	if str != "YES" {
+		err = errors.New("DB not deleted")
+		return
+	}
+
+	fmt.Println("Deleting Dabase: " + dbName)
 	os.Remove(dbPath)
+	return
 }
 
 func UpSchema() {

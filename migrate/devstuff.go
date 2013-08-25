@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/learc83/toastyserver/database"
 	"math/rand"
+	"time"
 )
 
 const randSeed int64 = 56355145
@@ -11,49 +12,39 @@ const randSeed int64 = 56355145
 var r *rand.Rand
 
 func createDevelopmentDB() {
-	database.DeleteDB()
+	err := database.DeleteDB()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	database.OpenDB()
 	defer database.CloseDB()
 
 	database.UpSchema()
 	addDevData()
 
-	// keyfob := Keyfob{Fob_num: 12107728, Admin: true}
-	// database.CreateRecord(keyfob)
+	keyfob := database.Keyfob{Fob_num: 12107728, Admin: true}
+	database.CreateRecord(keyfob)
 
-	// employee := Employee{Name: "Seth", Level: 3, Fob_num: 12107728}
-	// database.CreateRecord(employee)
+	employee := database.Employee{Name: "Seth", Level: 3, Fob_num: 12107728}
+	database.CreateRecord(employee)
 
-	// keyfob2 := Keyfob{Fob_num: 9873, Admin: false}
-	// database.CreateRecord(keyfob2)
+	keyfob2 := database.Keyfob{Fob_num: 9873, Admin: false}
+	database.CreateRecord(keyfob2)
 
-	// customer := Customer{Name: "Jane Tanner", Level: 3, Fob_num: 9873,
-	// 	Phone: "770-949-1622", Status: true}
-	// database.CreateRecord(customer)
+	customer := database.Customer{Name: "Jane Tanner", Level: 3, Fob_num: 9873,
+		Phone: "770-949-1622", Status: true}
+	database.CreateRecord(customer)
 
-	// customer2 := Customer{Name: "Fred Tanner", Level: 3, Fob_num: 9871,
-	// 	Phone: "770-949-1622", Status: false}
-	// database.CreateRecord(customer2)
+	customer2 := database.Customer{Name: "Fred Tanner", Level: 3, Fob_num: 9871,
+		Phone: "770-949-1622", Status: false}
+	database.CreateRecord(customer2)
 
-	// session := Session{
-	// 	Bed_num:     5,
-	// 	Customer_id: 11,
-	// 	Time_stamp:  time.Now().Unix() - 43201}
+	session := database.Session{Bed_num: 5, Customer_id: 11,
+		Time_stamp: time.Now().Unix() - 43201}
 
-	// err := database.CreateRecord(session)
-	// if err != nil {
-	// 	log.Println(err)
-	// 	return
-	// }
-
-	// session.Time_stamp = time.Now().Unix() - 50000
-
-	// err = database.CreateRecord(session)
-	// if err != nil {
-	// 	log.Println(err)
-	// 	return
-	// }
-
+	database.CreateRecord(session)
 }
 
 func addDevData() {

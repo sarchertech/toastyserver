@@ -7,7 +7,6 @@ import (
 )
 
 func StartServer() {
-	//WARNING -- DevMode DELETES DB
 	database.OpenDB()
 
 	for key, value := range getRoutes() {
