@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"os"
 	//blank identifer because we only care about side effects
 	//from initialization not calling anything in pkg directly
 	"fmt"
@@ -14,6 +15,18 @@ const dbPath string = "./" + dbName + ".db"
 
 //global variable for database pool
 var db *sql.DB
+
+// func StartDB() {
+// 	//TODO add logic to run db schema
+// 	//Ueses GOENV environment variable to determine behavior
+// 	env := os.Getenv("GOENV")
+
+// 	if env == "production" {
+// 		OpenDB()
+// 	} else if env == "development" {
+// 		OpenDBDevMode() //deletes and recreates DB
+// 	}
+// }
 
 func OpenDB() {
 	var err error
@@ -34,7 +47,15 @@ func OpenDB() {
 	}
 }
 
-func upSchema() {
+func CloseDB() {
+	db.Close()
+}
+
+func DeleteDB() {
+	os.Remove(dbPath)
+}
+
+func UpSchema() {
 	for k, v := range schema() {
 		sql := fmt.Sprintf("create table %s %s", k, v)
 
