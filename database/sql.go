@@ -48,6 +48,26 @@ func FindCustomer(keyNum int) (id int, name string, stat bool, lvl int, err erro
 	return
 }
 
+func FindMostRecentSession(cust_id int) (time int64, err error) {
+	stmt, err := db.Prepare(`SELECT Time_stamp
+							 FROM Session
+							 WHERE Session.Customer_id=?
+							 ORDER BY Session.Time_stamp DESC
+							 LIMIT 1`)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	err = stmt.QueryRow(cust_id).Scan(&time)
+	if err == sql.ErrNoRows {
+		log.Println(err)
+		err = nil
+	}
+
+	return
+}
+
 //TODO limit results to 50
 //Work on error for no rows
 //TODO abstract out with ListRecords just like CreateRecord

@@ -8,7 +8,8 @@ import (
 
 func StartServer() {
 	//WARNING -- DevMode DELETES DB
-	database.OpenDBDevMode()
+	//database.OpenDBDevMode()
+	database.OpenProduction()
 
 	for key, value := range getRoutes() {
 		http.HandleFunc(key, handlerWrapper(value))

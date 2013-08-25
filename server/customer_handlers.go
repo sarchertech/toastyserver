@@ -5,8 +5,8 @@ import (
 	"github.com/learc83/toastyserver/tmak"
 	"log"
 	"time"
-
 	//"github.com/learc83/toastyserver/tmak"
+	"errors"
 	"net/http"
 )
 
@@ -25,7 +25,20 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error With Customer Login")
 		return
+	}
 
+	t, err := database.FindMostRecentSession(id)
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error With Customer Login")
+		return
+	}
+
+	log.Println(t)
+
+	if time.Now().Unix()-t < 43200 {
+		err = errors.New("Already Tanned Today")
+		result["error"] = stringifyErr(err, "Error With Customer Login")
+		return
 	}
 
 	result["id"] = id
@@ -56,6 +69,7 @@ func bedStatus(req *http.Request, result map[string]interface{}) {
 func startBed(req *http.Request, result map[string]interface{}) {
 	params, err := getParams(req,
 		param{"bed_num", "int"},
+		param{"time", "int"},
 		param{"cust_num", "int"})
 
 	if err != nil {
@@ -66,11 +80,12 @@ func startBed(req *http.Request, result map[string]interface{}) {
 	log.Println(params)
 
 	//starts bed and creates session in the background b/c it may take a few seconds
-	//TODO try to start bed 3 or 4 times
+	//TODO try to start bed 3 or 4 times, starting bed twice to handle dirty beds
 	go func() {
-		err := tmak.StartBed(params["bed_num"].(int))
+		err := tmak.StartBed(params["bed_num"].(int), 1)
+		time.Sleep(0.10 * 1e9)
+		err = tmak.StartBed(params["bed_num"].(int), params["time"].(int))
 		if err != nil {
-			log.Println("Heeeeerrrree")
 			log.Println(err)
 			return
 		}
@@ -83,7 +98,6 @@ func startBed(req *http.Request, result map[string]interface{}) {
 
 		err = database.CreateRecord(session)
 		if err != nil {
-			log.Print("No, heeerrrre")
 			log.Println(err)
 			return
 		}

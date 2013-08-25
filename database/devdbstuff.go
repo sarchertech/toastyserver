@@ -8,12 +8,40 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	//"time"
+	"time"
 )
 
 const randSeed int64 = 56355145
 
 var r *rand.Rand
+
+func OpenProduction() {
+	//os.Remove(dbPath)
+	OpenDB()
+	//upSchema()
+
+	// bed1 := Bed{Bed_num: 1, Level: 1, Max_time: 15, Name: "SunDash 232"}
+	// bed2 := Bed{Bed_num: 2, Level: 2, Max_time: 12, Name: "Standup"}
+	// bed3 := Bed{Bed_num: 3, Level: 1, Max_time: 15, Name: "SunDash 232"}
+	// bed4 := Bed{Bed_num: 4, Level: 3, Max_time: 12, Name: "Ergoline 600"}
+	// bed5 := Bed{Bed_num: 5, Level: 1, Max_time: 15, Name: "SunDash 232"}
+	// bed6 := Bed{Bed_num: 6, Level: 2, Max_time: 15, Name: "Heartland"}
+
+	// CreateRecord(bed1)
+	// CreateRecord(bed2)
+	// CreateRecord(bed3)
+	// CreateRecord(bed4)
+	// CreateRecord(bed5)
+	// CreateRecord(bed6)
+
+	// keyfob2 := Keyfob{Fob_num: 9873, Admin: false}
+	// CreateRecord(keyfob2)
+
+	// customer := Customer{Name: "Jane Tanner", Level: 3, Fob_num: 9873,
+	// 	Phone: "770-949-1622", Status: true}
+	// CreateRecord(customer)
+
+}
 
 //WARNING -- DELETES DB
 func OpenDBDevMode() {
@@ -38,6 +66,31 @@ func OpenDBDevMode() {
 	customer2 := Customer{Name: "Fred Tanner", Level: 3, Fob_num: 9871,
 		Phone: "770-949-1622", Status: false}
 	CreateRecord(customer2)
+
+	session := Session{
+		Bed_num:     5,
+		Customer_id: 11,
+		Time_stamp:  time.Now().Unix() - 43201}
+
+	err := CreateRecord(session)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("bed started, session created")
+
+	//time.Sleep(1.5 * 1e9)
+
+	session.Time_stamp = time.Now().Unix() - 50000
+
+	err = CreateRecord(session)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("bed started, session created")
 }
 
 func addDevData() {

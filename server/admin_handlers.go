@@ -57,18 +57,21 @@ func customerListByName(req *http.Request, result map[string]interface{}) {
 func addNewCustomer(req *http.Request, result map[string]interface{}) {
 	params, err := getParams(req,
 		param{"name", "str"},
-		param{"phone number", "str"},
+		param{"phone_number", "str"},
 		param{"level", "int"},
-		param{"keyfob number", "int"})
+		param{"keyfob_number", "int"})
 
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error Adding New Customer")
 		return
 	}
 
-	customer := database.Customer{Name: params["name"].(string),
-		Phone: params["phone number"].(string), Status: true,
-		Level: params["level"].(int), Fob_num: params["keyfob number"].(int)}
+	customer := database.Customer{
+		Name:    params["name"].(string),
+		Phone:   params["phone_number"].(string),
+		Status:  true,
+		Level:   params["level"].(int),
+		Fob_num: params["keyfob_number"].(int)}
 
 	err = database.CreateRecord(customer)
 
