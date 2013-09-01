@@ -15,35 +15,55 @@ import (
 //result["error"] = ""
 
 func customerLogin(req *http.Request, result map[string]interface{}) {
+	//Error Codes 1: Nothing to inform tanner except, that something went wrong
+	//            2: Tanner not found in database
+	//            3: Tanner not authorized
+	//            4: Already tanned today.
+
 	params, err := getParams(req, param{"Fob_num", "int"})
 	if err != nil {
-		result["error"] = stringifyErr(err, "Error With Customer Login")
+		result["error_code"] = 1
+		result["error_message"] = stringifyErr(err, "Error With Customer Login")
 		return
 	}
 
 	id, name, stat, lvl, err := database.FindCustomer(params["Fob_num"].(int))
 	if err != nil {
-		result["error"] = stringifyErr(err, "Error With Customer Login")
+		result["error_code"] = 1
+		result["error_message"] = stringifyErr(err, "Error With Customer Login")
 		return
 	}
 
-	t, err := database.FindMostRecentSession(id)
+	if name == "" {
+		err = errors.New("Keyfob not found in database")
+		result["error_code"] = 2
+		result["error_message"] = stringifyErr(err, "Error With Customer Login")
+		return	
+	}
+
+	if !stat {
+		err = errors.New("Tanner Status False (not authorized)")
+		result["error_code"] = 3
+		result["error_message"] = stringifyErr(err, "Error With Customer Login")
+		return	
+	}
+
+	lastSessionTime, err := database.FindMostRecentSession(id)
 	if err != nil {
-		result["error"] = stringifyErr(err, "Error With Customer Login")
+		result["error_code"] = 1
+		result["error_message"] = stringifyErr(err, "Error With Customer Login")
 		return
 	}
-
-	log.Println(t)
-
-	if time.Now().Unix()-t < 43200 {
+	
+	if time.Now().Unix()-lastSessionTime < 43200 {
 		err = errors.New("Already Tanned Today")
-		result["error"] = stringifyErr(err, "Error With Customer Login")
+		result["error_code"] = 4
+		result["error_message"] = stringifyErr(err, "Error With Customer Login")
 		return
 	}
 
 	result["id"] = id
 	result["name"] = name
-	result["status"] = stat
 	result["level"] = lvl
 }
 
