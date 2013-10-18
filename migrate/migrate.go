@@ -19,7 +19,7 @@ func main() {
 		fmt.Println("Creating Production DB")
 	case "development":
 		createDevelopmentDB()
-		fmt.Println("Creating Production DB")
+		fmt.Println("Creating Development DB")
 	default:
 		fmt.Println("No environment selected. Please pass env flag")
 	}

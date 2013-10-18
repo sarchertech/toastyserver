@@ -214,6 +214,26 @@ func CreateRecord(record interface{}) (err error) {
 	return
 }
 
+func DeleteCustomer(id int) (err error) {
+	stmt, err := db.Prepare(`DELETE FROM Customer
+							 WHERE Customer.Id = ?`)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer stmt.Close()
+
+	//WARNING will not return error if record doesn't exist
+	//TODO add error for no record found
+	_, err = stmt.Exec(id)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	return	
+}
+
 func AvailableCustomerKeyfobs() (base10 []int32, base16 []string, err error) {
 	rows, err := db.Query(`SELECT Keyfob.Fob_num
 						   FROM Keyfob

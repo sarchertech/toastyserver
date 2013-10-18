@@ -82,13 +82,20 @@ func addNewCustomer(req *http.Request, result map[string]interface{}) {
 }
 
 func deleteCustomer(req *http.Request, result map[string]interface{}) {
-	// params, err := getParams(req, param{"customers_id", "int"})
+	params, err := getParams(req, param{"customer_id", "int"})
 
-	// if err != nil {
-	// 	result["error"] = stringifyErr(err, "Error Deleting Customer")
-	// }	
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Deleting Customer")
+		return
+	}
 
-	
+	//WARNING doesn't return error if record doesn't exist
+	err = database.DeleteCustomer(params["customer_id"].(int))
+
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Deleting Customer")
+		return
+	}	
 }
 
 func availableCustomerKeyfobs(req *http.Request, result map[string]interface{}) {
