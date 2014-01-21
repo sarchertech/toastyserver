@@ -55,11 +55,27 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 		return
 	}
 	
+	// at least 12 hours
 	if time.Now().Unix()-lastSessionTime < 43200 {
 		err = errors.New("Already Tanned Today")
 		result["error_code"] = 4
 		result["error_message"] = stringifyErr(err, "Error With Customer Login")
 		return
+	}
+
+	// can't tan 2x on same date - get local time, set hour and minutes to 0 = midnight
+	// local time, convert to Unix time check to see if that is smaller than last
+	// session time
+	t := time.Now()
+	midnight := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
+	//fmt.Println(midnight)
+	//fmt.Println(midnight.Unix())
+	//fmt.Println(lastSessionTime)
+	if lastSessionTime > midnight.Unix() {
+		err = errors.New("Already Tanned Today")
+		result["error_code"] = 4
+		result["error_message"] = stringifyErr(err, "Error With Customer Login")
+		return	
 	}
 
 	result["id"] = id
