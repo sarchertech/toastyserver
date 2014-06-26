@@ -88,8 +88,6 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 	result["level"] = lvl
 }
 
-//TODO change take customer id instead of lvl and return all beds that the
-//customer can use
 func bedStatus(req *http.Request, result map[string]interface{}) {
 	params, err := getParams(req, param{"customer_id", "int"})
 	if err != nil {

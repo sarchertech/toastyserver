@@ -128,10 +128,8 @@ func FindCustomersByName(name string) (customers []Customer, err error) {
 	return
 }
 
-//TODO change to display all beds that a customer can use. Right now this should
-//just involve finding customer's level from supplied id and return all beds
-//up to level--should just be "level <= ?" Later this could be changed to limit
-//customers to specific levels, not just all lvls <= customer's lvl
+//TODO Change so that levels aren't ints but strings and there
+//is no level hierarchy
 func BedsCustomerCanAccess(cust_id int) (beds []Bed, err error) {
 	stmt, err := db.Prepare(`SELECT Level
 							 FROM Customer
