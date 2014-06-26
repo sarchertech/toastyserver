@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"strings"
 	//blank identifer because we only care about side effects
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/learc83/go-sqlite3"
 )
 
 //TODO log calling function when logging sql errors
@@ -48,6 +48,7 @@ func FindCustomer(keyNum int) (id int, name string, stat bool, lvl int, err erro
 	return
 }
 
+//TODO add return value for bed number
 func FindMostRecentSession(cust_id int) (time int64, err error) {
 	stmt, err := db.Prepare(`SELECT Time_stamp
 							 FROM Session
@@ -127,6 +128,10 @@ func FindCustomersByName(name string) (customers []Customer, err error) {
 	return
 }
 
+//TODO change to display all beds that a customer can use. Right now this should
+//just involve finding customer's level from supplied id and return all beds
+//up to level--should just be "level <= ?" Later this could be changed to limit
+//customers to specific levels, not just all lvls <= customer's lvl
 func BedsByLevel(lvl int) (beds []Bed, err error) {
 	stmt, err := db.Prepare(`SELECT Bed_num, Level, Max_time, Name
 						     FROM Bed
@@ -231,7 +236,7 @@ func DeleteCustomer(id int) (err error) {
 		return
 	}
 
-	return	
+	return
 }
 
 func AvailableCustomerKeyfobs() (base10 []int32, base16 []string, err error) {

@@ -8,7 +8,7 @@ package tmak
 import (
 	"errors"
 	"github.com/learc83/toastyserver/database"
-	"github.com/schleibinger/sio"
+	"github.com/learc83/sio"
 	"log"
 	"sync"
 	"syscall"

@@ -95,7 +95,7 @@ func deleteCustomer(req *http.Request, result map[string]interface{}) {
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error Deleting Customer")
 		return
-	}	
+	}
 }
 
 func availableCustomerKeyfobs(req *http.Request, result map[string]interface{}) {

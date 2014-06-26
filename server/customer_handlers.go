@@ -34,27 +34,32 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 		return
 	}
 
+	//TODO what if name is blank. Maybe this should check for id instead.
 	if name == "" {
 		err = errors.New("Keyfob not found in database")
 		result["error_code"] = 2
 		result["error_message"] = stringifyErr(err, "Error With Customer Login")
-		return	
+		return
 	}
 
 	if !stat {
 		err = errors.New("Tanner Status False (not authorized)")
 		result["error_code"] = 3
 		result["error_message"] = stringifyErr(err, "Error With Customer Login")
-		return	
+		return
 	}
 
+	//TODO get bed value
 	lastSessionTime, err := database.FindMostRecentSession(id)
 	if err != nil {
 		result["error_code"] = 1
 		result["error_message"] = stringifyErr(err, "Error With Customer Login")
 		return
 	}
-	
+
+	//TODO if session started in last 5 minutes && bed status is true (not on)
+	//     then return error code 5 which allows customer to cancel bed
+
 	// at least 12 hours
 	if time.Now().Unix()-lastSessionTime < 43200 {
 		err = errors.New("Already Tanned Today")
@@ -75,7 +80,7 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 		err = errors.New("Already Tanned Today")
 		result["error_code"] = 4
 		result["error_message"] = stringifyErr(err, "Error With Customer Login")
-		return	
+		return
 	}
 
 	result["id"] = id
@@ -83,6 +88,8 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 	result["level"] = lvl
 }
 
+//TODO change take customer id instead of lvl and return all beds that the
+//customer can use
 func bedStatus(req *http.Request, result map[string]interface{}) {
 	params, err := getParams(req, param{"Level", "int"})
 	if err != nil {
@@ -92,7 +99,7 @@ func bedStatus(req *http.Request, result map[string]interface{}) {
 
 	beds, err := database.BedsByLevel(params["Level"].(int))
 	if err != nil {
-		result["error"] = stringifyErr(err, "rror Checking Customer Bed Status")
+		result["error"] = stringifyErr(err, "Error Checking Customer Bed Status")
 		return
 	}
 	log.Println(beds)

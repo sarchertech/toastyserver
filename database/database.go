@@ -7,7 +7,7 @@ import (
 	//blank identifer because we only care about side effects
 	//from initialization not calling anything in pkg directly
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/learc83/go-sqlite3"
 	"log"
 )
 
