@@ -20,14 +20,14 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 	//            3: Tanner not authorized
 	//            4: Already tanned today.
 
-	params, err := getParams(req, param{"Fob_num", "int"})
+	params, err := getParams(req, param{"fob_num", "int"})
 	if err != nil {
 		result["error_code"] = 1
 		result["error_message"] = stringifyErr(err, "Error With Customer Login")
 		return
 	}
 
-	id, name, stat, lvl, err := database.FindCustomer(params["Fob_num"].(int))
+	id, name, stat, lvl, err := database.FindCustomer(params["fob_num"].(int))
 	if err != nil {
 		result["error_code"] = 1
 		result["error_message"] = stringifyErr(err, "Error With Customer Login")
@@ -91,13 +91,13 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 //TODO change take customer id instead of lvl and return all beds that the
 //customer can use
 func bedStatus(req *http.Request, result map[string]interface{}) {
-	params, err := getParams(req, param{"Level", "int"})
+	params, err := getParams(req, param{"customer_id", "int"})
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error Checking Customer Bed Status")
 		return
 	}
 
-	beds, err := database.BedsByLevel(params["Level"].(int))
+	beds, err := database.BedsCustomerCanAccess(params["customer_id"].(int))
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error Checking Customer Bed Status")
 		return

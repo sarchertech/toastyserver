@@ -132,16 +132,31 @@ func FindCustomersByName(name string) (customers []Customer, err error) {
 //just involve finding customer's level from supplied id and return all beds
 //up to level--should just be "level <= ?" Later this could be changed to limit
 //customers to specific levels, not just all lvls <= customer's lvl
-func BedsByLevel(lvl int) (beds []Bed, err error) {
-	stmt, err := db.Prepare(`SELECT Bed_num, Level, Max_time, Name
-						     FROM Bed
-						     WHERE Level = ?`)
+func BedsCustomerCanAccess(cust_id int) (beds []Bed, err error) {
+	stmt, err := db.Prepare(`SELECT Level
+							 FROM Customer
+							 WHERE Customer.Id=?`)
 	if err != nil {
 		return
 	}
 	defer stmt.Close()
 
-	rows, err := stmt.Query(lvl)
+	var lvl int
+	err = stmt.QueryRow(cust_id).Scan(&lvl)
+	if err == sql.ErrNoRows {
+		log.Println(err)
+		err = nil
+	}
+
+	stmt2, err := db.Prepare(`SELECT Bed_num, Level, Max_time, Name
+						     FROM Bed
+						     WHERE Level <= ?`)
+	if err != nil {
+		return
+	}
+	defer stmt2.Close()
+
+	rows, err := stmt2.Query(lvl)
 	if err != nil {
 		return
 	}
