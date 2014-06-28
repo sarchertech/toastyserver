@@ -49,16 +49,36 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 		return
 	}
 
-	//TODO get bed value
-	lastSessionTime, err := database.FindMostRecentSession(id)
+	//get last session information--time, and bed number default values
+	//for both are 0, so if there is no last session both with be set to 0
+	lastSessionTime, lastSessionBedId, err := database.FindMostRecentSession(id)
 	if err != nil {
 		result["error_code"] = 1
 		result["error_message"] = stringifyErr(err, "Error With Customer Login")
 		return
 	}
 
-	//TODO if session started in last 5 minutes && bed status is true (not on)
-	//     then return error code 5 which allows customer to cancel bed
+	/////These next if statements work based on the assumption that
+	//lastSessionTime and lastSessionBed return 0 if no values are found
+
+	//if session started in last 5 minutes && bed status is true (not on)
+	//then return error code 5 which allows customer to cancel bed
+	//will not take this path if lastSesssionBedId == 0, i.e. no last session
+	if (time.Now().Unix()-lastSessionTime < 300) && (lastSessionBedId != 0) {
+		var beds []database.Bed
+		var bed database.Bed
+		bed.Bed_num = lastSessionBedId
+
+		beds = append(beds, bed)
+		tmak.BedStatuses(beds)
+
+		if beds[0].Status {
+			err = errors.New("Session in Progress")
+			result["error_code"] = 5
+			result["error_message"] = stringifyErr(err, "Error With Customer Login")
+			return
+		}
+	}
 
 	// at least 12 hours
 	if time.Now().Unix()-lastSessionTime < 43200 {
@@ -102,6 +122,7 @@ func bedStatus(req *http.Request, result map[string]interface{}) {
 	}
 	log.Println(beds)
 
+	//edits bed statuses in place--true means ready for tanning
 	tmak.BedStatuses(beds)
 
 	result["beds"] = beds

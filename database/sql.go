@@ -48,9 +48,8 @@ func FindCustomer(keyNum int) (id int, name string, stat bool, lvl int, err erro
 	return
 }
 
-//TODO add return value for bed number
-func FindMostRecentSession(cust_id int) (time int64, err error) {
-	stmt, err := db.Prepare(`SELECT Time_stamp
+func FindMostRecentSession(cust_id int) (time int64, bed int, err error) {
+	stmt, err := db.Prepare(`SELECT Time_stamp, Bed_num
 							 FROM Session
 							 WHERE Session.Customer_id=?
 							 ORDER BY Session.Time_stamp DESC
@@ -60,7 +59,7 @@ func FindMostRecentSession(cust_id int) (time int64, err error) {
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow(cust_id).Scan(&time)
+	err = stmt.QueryRow(cust_id).Scan(&time, &bed)
 	if err == sql.ErrNoRows {
 		log.Println(err)
 		err = nil

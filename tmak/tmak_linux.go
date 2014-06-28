@@ -7,8 +7,8 @@ package tmak
 
 import (
 	"errors"
-	"github.com/learc83/toastyserver/database"
 	"github.com/learc83/sio"
+	"github.com/learc83/toastyserver/database"
 	"log"
 	"sync"
 	"syscall"
@@ -51,9 +51,12 @@ func BedStatuses(beds []database.Bed) (err error) {
 		}
 	}
 
+	//Order of passed bed array doesn't matter. Loops through passed bed array
+	//and using the Bed_num from each bed gets it's status from rBuf
 	for i := range beds {
 		s := rBuf[beds[i].Bed_num+3]
 
+		//return true if bed is in state 0 or 4
 		beds[i].Status = (s == 0 || s == 4)
 	}
 
