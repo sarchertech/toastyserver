@@ -130,32 +130,31 @@ func cancelSession(req *http.Request, result map[string]interface{}) {
 		return
 	}
 
-	//Cancel Session
-	//This is the same if statment as in customerLogin. We have to check again
-	//to make sure the bed still hasn't started between api calls
-	if (time.Now().Unix()-lastSessionTime < 300) && (lastSessionBedId != 0) {
-		var beds []database.Bed
-		var bed database.Bed
-		bed.Bed_num = lastSessionBedId
+	var beds []database.Bed
+	var bed database.Bed
+	bed.Bed_num = lastSessionBedId
 
-		beds = append(beds, bed)
-		tmak.BedStatuses(beds)
+	beds = append(beds, bed)
+	tmak.BedStatuses(beds)
 
-		//return error if bed already started
-		if !(beds[0].Status) {
-			err = errors.New("Bed already started")
-			result["error_code"] = 2
-			result["error_message"] = stringifyErr(err, "Error Cancelling Session")
-			return
-		}
-
-		err := database.DeleteSession(lastSessionId)
-		if err != nil {
-			result["error_code"] = 1
-			result["error_message"] = stringifyErr(err, "Error Cancelling Session")
-			return
-		}
+	//Can't cancel after 5 minutes or bed already started
+	if !(beds[0].Status) || (time.Now().Unix()-lastSessionTime > 300) {
+		//return error bed already started--more than 5 minutes since session creation
+		err = errors.New("Bed already started")
+		result["error_code"] = 2
+		result["error_message"] = stringifyErr(err, "Error Cancelling Session")
+		return
 	}
+
+	err = database.DeleteSession(lastSessionId)
+	if err != nil {
+		result["error_code"] = 1
+		result["error_message"] = stringifyErr(err, "Error Cancelling Session")
+		return
+	}
+
+	//Empty braces == succcess or no sessions to delete
+
 }
 
 func bedStatus(req *http.Request, result map[string]interface{}) {
