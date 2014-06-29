@@ -54,7 +54,7 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 
 	//get last session information--time, and bed number default values
 	//for both are 0, so if there is no last session both with be set to 0
-	lastSessionTime, lastSessionBedId, err := database.FindMostRecentSession(id)
+	_, lastSessionTime, lastSessionBedId, err := database.FindMostRecentSession(id)
 	if err != nil {
 		result["error_code"] = 1
 		result["error_message"] = stringifyErr(err, "Error With Customer Login")
@@ -111,6 +111,51 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 	result["id"] = id
 	result["name"] = name
 	result["level"] = lvl
+}
+
+func cancelSession(req *http.Request, result map[string]interface{}) {
+	params, err := getParams(req, param{"customer_id", "int"})
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Cancelling Session")
+		return
+	}
+
+	//get last session information--time, and bed number default values
+	//for both are 0, so if there is no last session both with be set to 0
+	id := params["customer_id"].(int)
+	lastSessionId, lastSessionTime, lastSessionBedId, err := database.FindMostRecentSession(id)
+	if err != nil {
+		result["error_code"] = 1
+		result["error_message"] = stringifyErr(err, "Error Cancelling Session")
+		return
+	}
+
+	//Cancel Session
+	//This is the same if statment as in customerLogin. We have to check again
+	//to make sure the bed still hasn't started between api calls
+	if (time.Now().Unix()-lastSessionTime < 300) && (lastSessionBedId != 0) {
+		var beds []database.Bed
+		var bed database.Bed
+		bed.Bed_num = lastSessionBedId
+
+		beds = append(beds, bed)
+		tmak.BedStatuses(beds)
+
+		//return error if bed already started
+		if !(beds[0].Status) {
+			err = errors.New("Bed already started")
+			result["error_code"] = 2
+			result["error_message"] = stringifyErr(err, "Error Cancelling Session")
+			return
+		}
+
+		err := database.DeleteSession(lastSessionId)
+		if err != nil {
+			result["error_code"] = 1
+			result["error_message"] = stringifyErr(err, "Error Cancelling Session")
+			return
+		}
+	}
 }
 
 func bedStatus(req *http.Request, result map[string]interface{}) {

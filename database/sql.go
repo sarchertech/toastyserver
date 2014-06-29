@@ -48,8 +48,8 @@ func FindCustomer(keyNum int) (id int, name string, stat bool, lvl int, err erro
 	return
 }
 
-func FindMostRecentSession(cust_id int) (time int64, bed int, err error) {
-	stmt, err := db.Prepare(`SELECT Time_stamp, Bed_num
+func FindMostRecentSession(cust_id int) (id int, time int64, bed int, err error) {
+	stmt, err := db.Prepare(`SELECT Id, Time_stamp, Bed_num
 							 FROM Session
 							 WHERE Session.Customer_id=?
 							 ORDER BY Session.Time_stamp DESC
@@ -59,7 +59,7 @@ func FindMostRecentSession(cust_id int) (time int64, bed int, err error) {
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow(cust_id).Scan(&time, &bed)
+	err = stmt.QueryRow(cust_id).Scan(&id, &time, &bed)
 	if err == sql.ErrNoRows {
 		log.Println(err)
 		err = nil
@@ -234,6 +234,26 @@ func CreateRecord(record interface{}) (err error) {
 func DeleteCustomer(id int) (err error) {
 	stmt, err := db.Prepare(`DELETE FROM Customer
 							 WHERE Customer.Id = ?`)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer stmt.Close()
+
+	//WARNING will not return error if record doesn't exist
+	//TODO add error for no record found
+	_, err = stmt.Exec(id)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	return
+}
+
+func DeleteSession(id int) (err error) {
+	stmt, err := db.Prepare(`DELETE FROM Session
+							 WHERE Session.Id = ?`)
 	if err != nil {
 		log.Println(err)
 		return
