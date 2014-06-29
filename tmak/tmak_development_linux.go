@@ -18,7 +18,7 @@ func init() {
 //Side Effects: edits beds in place
 func BedStatuses(beds []database.Bed) (err error) {
 	for i := range beds {
-		beds[i].Status = !(i%3 == 0)
+		beds[i].Status = !(beds[i].Bed_num%3 == 0)
 	}
 
 	fmt.Println("Fake Bed Statuses Called")

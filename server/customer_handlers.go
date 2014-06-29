@@ -20,6 +20,7 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 	//            3: Tanner not authorized
 	//            4: Already tanned today.
 
+	//Params Error
 	params, err := getParams(req, param{"fob_num", "int"})
 	if err != nil {
 		result["error_code"] = 1
@@ -27,6 +28,7 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 		return
 	}
 
+	//DB Error
 	id, name, stat, lvl, err := database.FindCustomer(params["fob_num"].(int))
 	if err != nil {
 		result["error_code"] = 1
@@ -34,14 +36,15 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 		return
 	}
 
-	//TODO what if name is blank. Maybe this should check for id instead.
-	if name == "" {
+	//Customer Not Found--customer id has a default value of 0
+	if id == 0 {
 		err = errors.New("Keyfob not found in database")
 		result["error_code"] = 2
 		result["error_message"] = stringifyErr(err, "Error With Customer Login")
 		return
 	}
 
+	//Customer Not Authorized--Customer status bit 0
 	if !stat {
 		err = errors.New("Tanner Status False (not authorized)")
 		result["error_code"] = 3
@@ -58,9 +61,10 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 		return
 	}
 
-	/////These next if statements work based on the assumption that
+	//These next if statements work based on the assumption that
 	//lastSessionTime and lastSessionBed return 0 if no values are found
 
+	//Cancel Session
 	//if session started in last 5 minutes && bed status is true (not on)
 	//then return error code 5 which allows customer to cancel bed
 	//will not take this path if lastSesssionBedId == 0, i.e. no last session
@@ -76,6 +80,7 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 			err = errors.New("Session in Progress")
 			result["error_code"] = 5
 			result["error_message"] = stringifyErr(err, "Error With Customer Login")
+			result["customer_id"] = id
 			return
 		}
 	}
