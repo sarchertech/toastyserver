@@ -31,5 +31,9 @@ func schema() map[string]string {
 					 Customer_id integer not null,
 					 Time_stamp integer not null)`
 
+	s["DoorAccess"] = `(Id integer primary key,
+						Customer_id integer not null,
+						Time_stamp integer not null)`
+
 	return s
 }

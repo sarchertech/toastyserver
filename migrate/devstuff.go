@@ -45,6 +45,14 @@ func createDevelopmentDB() {
 		Time_stamp: time.Now().Unix() - 43201}
 
 	database.CreateRecord(session)
+
+	//Create 10 random door accesses
+	for i := 0; i < 10; i++ {
+		doorAccess := database.DoorAccess{Customer_id: rand.Intn(7) + 1, 
+		Time_stamp: time.Now().Unix() - int64(100000 + 3609 * i)}
+		database.CreateRecord(doorAccess)
+	}
+
 }
 
 func addDevData() {
