@@ -16,6 +16,7 @@ func getRoutes() map[string]toastyHndlrFnc {
 	r["/add_new_customer"] = addNewCustomer
 	r["/available_customer_keyfobs"] = availableCustomerKeyfobs
 	r["/delete_customer"] = deleteCustomer
+	r["/door_report"] = doorReport
 
 	//customer routes
 	r["/customer_login"] = customerLogin

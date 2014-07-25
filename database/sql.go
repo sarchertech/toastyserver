@@ -302,3 +302,27 @@ func AvailableCustomerKeyfobs() (base10 []int32, base16 []string, err error) {
 
 	return
 }
+
+func RecentDoorAccesses() (doorAccesses []DoorAccess, err error) {
+	rows, err := db.Query(`SELECT DoorAccess.Id, Customer_id, Name, Time_stamp, Phone 
+						   FROM DoorAccess
+						   INNER JOIN Customer
+						   ON DoorAccess.Customer_id == Customer.Id
+						   ORDER BY DoorAccess.Id
+						   LIMIT 9`)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	//equivalent to while rows.Next() == true
+	for rows.Next() {
+		var d DoorAccess
+		rows.Scan(&d.Id, &d.Customer_id, &d.Name, &d.Time_stamp, &d.Phone)
+
+		doorAccesses = append(doorAccesses, d)
+	}
+	rows.Close()
+
+	return
+}

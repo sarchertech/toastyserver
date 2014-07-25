@@ -43,4 +43,6 @@ type DoorAccess struct {
 	Id 			int `db:"autoInc"`
 	Customer_id int
 	Time_stamp  int64
+	Name 		string `db:false`
+	Phone       string `db:false`
 }

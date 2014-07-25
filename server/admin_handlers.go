@@ -108,3 +108,13 @@ func availableCustomerKeyfobs(req *http.Request, result map[string]interface{}) 
 	result["keyfobsTen"] = keyfobsTen
 	result["keyfobsHex"] = keyfobsHex
 }
+
+func doorReport(req *http.Request, result map[string]interface{}) {
+	accesses, err := database.RecentDoorAccesses() //500
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Displaying Door Report")
+		return
+	}
+
+	result["doorAccesses"] = accesses
+}
