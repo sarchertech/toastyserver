@@ -304,13 +304,15 @@ func AvailableCustomerKeyfobs() (base10 []int32, base16 []string, err error) {
 	return
 }
 
+//Return most recent 500. 
+//TODO add date filter
 func RecentDoorAccesses() (doorAccesses []DoorAccess, err error) {
 	rows, err := db.Query(`SELECT DoorAccess.Id, Customer_id, Name, Time_stamp, Phone 
 						   FROM DoorAccess
 						   INNER JOIN Customer
 						   ON DoorAccess.Customer_id == Customer.Id
-						   ORDER BY DoorAccess.Id
-						   LIMIT 9`)
+						   ORDER BY DoorAccess.Id DESC
+						   LIMIT 500`)
 	if err != nil {
 		return
 	}
