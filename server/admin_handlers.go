@@ -118,3 +118,13 @@ func doorReport(req *http.Request, result map[string]interface{}) {
 
 	result["doorAccesses"] = accesses
 }
+
+func tanReport(req *http.Request, result map[string]interface{}) {
+	sessions, err := database.RecentTanSessions() //500
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Displaying Door Report")
+		return
+	}
+
+	result["tanSessions"] = sessions
+}

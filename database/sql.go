@@ -331,3 +331,31 @@ func RecentDoorAccesses() (doorAccesses []DoorAccess, err error) {
 
 	return
 }
+
+//Return most recent 500. 
+//TODO add date filter
+func RecentTanSessions() (sessions []Session, err error) {
+	rows, err := db.Query(`SELECT Session.Id, Customer_id, Name, Bed_num, Time_stamp 
+						   FROM Session
+						   INNER JOIN Customer
+						   ON Session.Customer_id == Customer.Id
+						   ORDER BY Session.Id DESC
+						   LIMIT 500`)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	//equivalent to while rows.Next() == true
+	for rows.Next() {
+		var s Session
+		rows.Scan(&s.Id, &s.Customer_id, &s.Name, &s.Bed_num, &s.Time_stamp)
+
+		s.Local_time = time.Unix(s.Time_stamp, 0).Local().Format("01/02|3:04pm")
+
+		sessions = append(sessions, s)
+	}
+	rows.Close()
+
+	return
+}

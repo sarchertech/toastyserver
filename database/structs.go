@@ -37,6 +37,8 @@ type Session struct {
 	Bed_num     int
 	Customer_id int
 	Time_stamp  int64
+	Name		string `db:"false"`
+	Local_time  string `db:"false"`
 }
 
 type DoorAccess struct {
