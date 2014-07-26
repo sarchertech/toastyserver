@@ -41,18 +41,24 @@ func createDevelopmentDB() {
 		Phone: "770-949-1622", Status: false}
 	database.CreateRecord(customer2)
 
-	session := database.Session{Bed_num: 5, Customer_id: 11,
-		Time_stamp: time.Now().Unix() - 43201}
-
-	database.CreateRecord(session)
-
 	//Create 550 random door accesses
 	for i := 0; i < 550; i++ {
 		doorAccess := database.DoorAccess{Customer_id: rand.Intn(7) + 1, 
-		Time_stamp: time.Now().Unix() - int64(500000) + int64(609 * i)}
+			Time_stamp: time.Now().Unix() - int64(500000) + int64(609 * i)}
 		database.CreateRecord(doorAccess)
 	}
 
+	for i := 0; i < 550; i++ {
+		session := database.Session{Bed_num: rand.Intn(5) + 1, 
+			Customer_id: rand.Intn(7) + 1, Session_time: rand.Intn(8) + 2,
+			Time_stamp: time.Now().Unix() - int64(500000) + int64(609 * i)}
+		database.CreateRecord(session)
+	}
+
+	session := database.Session{Bed_num: 5, Customer_id: 11, Session_time: 4,
+	Time_stamp: time.Now().Unix() - 43201}
+
+	database.CreateRecord(session)
 }
 
 func addDevData() {

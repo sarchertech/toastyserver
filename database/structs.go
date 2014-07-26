@@ -33,14 +33,15 @@ type Bed struct {
 }
 
 type Session struct {
-	Id          int `db:"autoInc"`
-	Bed_num     int
-	Customer_id int
-	Time_stamp  int64
-	Name		string `db:"false"`
-	Local_time  string `db:"false"`
-	Month       string `db:"false"`
-	Day			string `db:"false"`
+	Id           int `db:"autoInc"`
+	Bed_num      int
+	Customer_id  int
+	Session_time int
+	Time_stamp   int64
+	Name		 string `db:"false"`
+	Local_time   string `db:"false"`
+	Month        string `db:"false"`
+	Day			 string `db:"false"`
 }
 
 type DoorAccess struct {

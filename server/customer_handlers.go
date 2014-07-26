@@ -203,9 +203,10 @@ func startBed(req *http.Request, result map[string]interface{}) {
 
 		//TODO enforce foreign key constraints
 		session := database.Session{
-			Bed_num:     params["bed_num"].(int),
-			Customer_id: params["cust_num"].(int),
-			Time_stamp:  time.Now().Unix()}
+			Bed_num:      params["bed_num"].(int),
+			Customer_id:  params["cust_num"].(int),
+			Session_time: params["time"].(int),
+			Time_stamp:   time.Now().Unix()}
 
 		err = database.CreateRecord(session)
 		if err != nil {
