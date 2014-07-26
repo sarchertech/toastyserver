@@ -45,4 +45,5 @@ type DoorAccess struct {
 	Time_stamp  int64
 	Name 		string `db:false`
 	Phone       string `db:false`
+	Local_time  string `db:false`
 }

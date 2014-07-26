@@ -6,6 +6,7 @@ import (
 	"log"
 	"reflect"
 	"strings"
+	"time"
 	//blank identifer because we only care about side effects
 	_ "github.com/learc83/go-sqlite3"
 )
@@ -319,6 +320,8 @@ func RecentDoorAccesses() (doorAccesses []DoorAccess, err error) {
 	for rows.Next() {
 		var d DoorAccess
 		rows.Scan(&d.Id, &d.Customer_id, &d.Name, &d.Time_stamp, &d.Phone)
+
+		d.Local_time = time.Unix(d.Time_stamp, 0).Local().Format("01/02|3:04pm")
 
 		doorAccesses = append(doorAccesses, d)
 	}
