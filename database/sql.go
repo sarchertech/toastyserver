@@ -323,7 +323,9 @@ func RecentDoorAccesses() (doorAccesses []DoorAccess, err error) {
 		var d DoorAccess
 		rows.Scan(&d.Id, &d.Customer_id, &d.Name, &d.Time_stamp, &d.Phone)
 
-		d.Local_time = time.Unix(d.Time_stamp, 0).Local().Format("01/02|3:04pm")
+		d.Local_time = time.Unix(d.Time_stamp, 0).Local().Format("3:04pm")
+		d.Month = time.Unix(d.Time_stamp, 0).Local().Format("01")
+		d.Day = time.Unix(d.Time_stamp, 0).Local().Format("02")
 
 		doorAccesses = append(doorAccesses, d)
 	}
@@ -351,7 +353,9 @@ func RecentTanSessions() (sessions []Session, err error) {
 		var s Session
 		rows.Scan(&s.Id, &s.Customer_id, &s.Name, &s.Bed_num, &s.Time_stamp)
 
-		s.Local_time = time.Unix(s.Time_stamp, 0).Local().Format("01/02|3:04pm")
+		s.Local_time = time.Unix(s.Time_stamp, 0).Local().Format("3:04pm")
+		s.Month = time.Unix(s.Time_stamp, 0).Local().Format("01")
+		s.Day = time.Unix(s.Time_stamp, 0).Local().Format("02")
 
 		sessions = append(sessions, s)
 	}

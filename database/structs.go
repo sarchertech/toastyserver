@@ -39,6 +39,8 @@ type Session struct {
 	Time_stamp  int64
 	Name		string `db:"false"`
 	Local_time  string `db:"false"`
+	Month       string `db:"false"`
+	Day			string `db:"false"`
 }
 
 type DoorAccess struct {
@@ -48,4 +50,6 @@ type DoorAccess struct {
 	Name 		string `db:"false"`
 	Phone       string `db:"false"`
 	Local_time  string `db:"false"`
+	Month       string `db:"false"`
+	Day			string `db:"false"`
 }
