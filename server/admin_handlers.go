@@ -122,7 +122,7 @@ func doorReport(req *http.Request, result map[string]interface{}) {
 func tanReport(req *http.Request, result map[string]interface{}) {
 	sessions, err := database.RecentTanSessions() //500
 	if err != nil {
-		result["error"] = stringifyErr(err, "Error Displaying Door Report")
+		result["error"] = stringifyErr(err, "Error Displaying Tan Report")
 		return
 	}
 
