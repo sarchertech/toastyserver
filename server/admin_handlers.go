@@ -144,8 +144,7 @@ func addNewBed(req *http.Request, result map[string]interface{}) {
 	bed := database.Bed{
 		Level:	  params["level"].(int),
 		Max_time: params["max_time"].(int),
-		Name:	  params["name"].(string)
-	}
+		Name:	  params["name"].(string)}
 
 	err = database.CreateRecord(bed)
 
