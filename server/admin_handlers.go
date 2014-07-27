@@ -128,3 +128,29 @@ func tanReport(req *http.Request, result map[string]interface{}) {
 
 	result["tanSessions"] = sessions
 }
+
+//TODO enforce non-blank bed name string
+func addNewBed(req *http.Request, result map[string]interface{}) {
+	params, err := getParams(req,
+		param{"level", "int"},
+		param{"max_time", "int"},
+		param{"name", "string"})
+
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Adding New Bed")
+		return
+	}
+
+	bed := database.Bed{
+		Level:	  params["level"].(int),
+		Max_time: params["max_time"].(int),
+		Name:	  params["name"].(string)
+	}
+
+	err = database.CreateRecord(bed)
+
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Adding New Bed")
+		return
+	}
+}

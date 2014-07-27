@@ -25,7 +25,7 @@ type Keyfob struct {
 }
 
 type Bed struct {
-	Bed_num  int
+	Bed_num  int `db:"autoInc"`
 	Level    int
 	Max_time int
 	Name     string
