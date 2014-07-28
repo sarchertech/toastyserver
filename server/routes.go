@@ -18,6 +18,8 @@ func getRoutes() map[string]toastyHndlrFnc {
 	r["/delete_customer"] = deleteCustomer
 	r["/door_report"] = doorReport
 	r["/tan_report"] = tanReport
+	r["/add_new_bed"] = addNewBed
+	r["/delete_bed"] = deleteBed
 
 	//customer routes
 	r["/customer_login"] = customerLogin

@@ -365,3 +365,23 @@ func RecentTanSessions() (sessions []Session, err error) {
 
 	return
 }
+
+func DeleteBed(id int) (err error) {
+	stmt, err := db.Prepare(`DELETE FROM Bed
+							 WHERE Bed.Bed_num = ?`)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer stmt.Close()
+
+	//WARNING will not return error if record doesn't exist
+	//TODO add error for no record found
+	_, err = stmt.Exec(id)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	return
+}

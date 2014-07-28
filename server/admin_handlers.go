@@ -153,3 +153,20 @@ func addNewBed(req *http.Request, result map[string]interface{}) {
 		return
 	}
 }
+
+func deleteBed(req *http.Request, result map[string]interface{}) {
+	params, err := getParams(req, param{"bed_num", "int"})
+
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Deleting Bed")
+		return
+	}
+
+	//WARNING doesn't return error if record doesn't exist
+	err = database.DeleteBed(params["bed_num"].(int))
+
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Deleting Bed")
+		return
+	}
+}
