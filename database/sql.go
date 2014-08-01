@@ -385,3 +385,24 @@ func DeleteBed(id int) (err error) {
 
 	return
 }
+
+func UpdateBed(bed Bed) (err error) {
+	stmt, err := db.Prepare(`UPDATE Bed
+							 SET Level = ?,
+							 Max_time = ?,
+							 Name = ?
+							 WHERE Bed.Bed_num = ?`)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(bed.Level, bed.Max_time, bed.Name, bed.Bed_num)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	return
+}

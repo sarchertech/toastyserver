@@ -170,3 +170,29 @@ func deleteBed(req *http.Request, result map[string]interface{}) {
 		return
 	}
 }
+
+func updateBed(req *http.Request, result map[string]interface{}) {
+	params, err := getParams(req,
+		param{"bed_num", "int"},
+		param{"level", "int"},
+		param{"max_time", "int"},
+		param{"name", "string"})
+
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Updating Bed")
+		return
+	}
+
+	bed := database.Bed{
+		Bed_num:  params["bed_num"].(int),
+		Level:	  params["level"].(int),
+		Max_time: params["max_time"].(int),
+		Name:	  params["name"].(string)}
+
+	err = database.UpdateBed(bed)
+
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Updating Bed")
+		return
+	}
+}
