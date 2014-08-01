@@ -196,3 +196,13 @@ func updateBed(req *http.Request, result map[string]interface{}) {
 		return
 	}
 }
+
+func listBeds(req *http.Request, result map[string]interface{}) {
+	beds, err := database.ListBeds()
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Displaying Bed List")
+		return
+	}
+
+	result["beds"] = beds
+}

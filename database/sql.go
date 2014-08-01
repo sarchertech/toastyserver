@@ -406,3 +406,26 @@ func UpdateBed(bed Bed) (err error) {
 
 	return
 }
+
+//TODO limit results to 50
+//Work on error for no rows
+//TODO abstract out with ListRecords just like CreateRecord
+func ListBeds() (beds []Bed, err error) {
+	rows, err := db.Query(`SELECT Bed_num, Level, Max_time, Name
+						   FROM Bed`)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	//equivalent to while rows.Next() == true
+	for rows.Next() {
+		var b Bed
+		rows.Scan(&b.Bed_num, &b.Level, &b.Max_time, &b.Name)
+
+		beds = append(beds, b)
+	}
+	rows.Close()
+
+	return
+}

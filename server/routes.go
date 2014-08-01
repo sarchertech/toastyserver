@@ -21,6 +21,7 @@ func getRoutes() map[string]toastyHndlrFnc {
 	r["/add_new_bed"] = addNewBed
 	r["/delete_bed"] = deleteBed
 	r["/update_bed"] = updateBed
+	r["/list_beds"] = listBeds
 
 	//customer routes
 	r["/customer_login"] = customerLogin
