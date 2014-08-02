@@ -429,3 +429,61 @@ func ListBeds() (beds []Bed, err error) {
 
 	return
 }
+
+//TODO make sure transaction is functioning properly
+//and this sql transaction is atomic also range checking
+//also handle closing statments and transactions using defer
+//Swap Bed_num with the bed who's  Bed_num is one number higher
+//swapping using temporary value 999
+func MoveBedDown(bed_num int) (err error) {
+	tx, err := db.Begin()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	stmt, err := tx.Prepare(`UPDATE Bed
+							 SET Bed_num = ?
+							 WHERE Bed_num = ?`)
+	_, err = stmt.Exec(999, bed_num+1)
+	_, err = stmt.Exec(bed_num+1, bed_num)
+	_, err = stmt.Exec(bed_num, 999)
+
+	if err != nil {
+		log.Println(err)
+		tx.Rollback()
+		return
+	}
+	tx.Commit()
+
+	return	
+}
+
+//TODO make sure transaction is functioning properly
+//and this sql transaction is atomic also range checking
+//also handle closing statments and transactions using defer
+//Swap Bed_num with the bed who's  Bed_num is one number higher
+//swapping using temporary value 999
+func MoveBedUp(bed_num int) (err error) {
+	tx, err := db.Begin()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	stmt, err := tx.Prepare(`UPDATE Bed
+							 SET Bed_num = ?
+							 WHERE Bed_num = ?`)
+	_, err = stmt.Exec(999, bed_num-1)
+	_, err = stmt.Exec(bed_num-1, bed_num)
+	_, err = stmt.Exec(bed_num, 999)
+
+	if err != nil {
+		log.Println(err)
+		tx.Rollback()
+		return
+	}
+	tx.Commit()
+
+	return	
+}

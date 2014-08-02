@@ -206,3 +206,35 @@ func listBeds(req *http.Request, result map[string]interface{}) {
 
 	result["beds"] = beds
 }
+
+func moveBedDown(req *http.Request, result map[string]interface{}) {
+	params, err := getParams(req, param{"bed_num", "int"})
+
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Moving Bed Down")
+		return
+	}
+
+	err = database.MoveBedDown(params["bed_num"].(int))
+
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Moving Bed Down")
+		return
+	}
+}
+
+func moveBedUp(req *http.Request, result map[string]interface{}) {
+	params, err := getParams(req, param{"bed_num", "int"})
+
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Moving Bed Up")
+		return
+	}
+
+	err = database.MoveBedUp(params["bed_num"].(int))
+
+	if err != nil {
+		result["error"] = stringifyErr(err, "Error Moving Bed Up")
+		return
+	}
+}
