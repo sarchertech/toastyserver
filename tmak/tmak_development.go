@@ -1,4 +1,3 @@
-// +build linux
 // +build development
 
 //use go install -tags production
