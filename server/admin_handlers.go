@@ -12,13 +12,13 @@ import (
 //TODO replace stringifyErr with fmt.ErrorF() now that I know it exists
 
 func employeeLogin(req *http.Request, result map[string]interface{}) {
-	params, err := getParams(req, param{"Fob_num", "int"})
+	params, err := getParams(req, param{"Fob_num", "uint64"})
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error Logging In")
 		return
 	}
 
-	name, err := database.FindEmployee(params["Fob_num"].(int))
+	name, err := database.FindEmployee(params["Fob_num"].(uint64))
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error Logging In")
 		return
@@ -59,7 +59,7 @@ func addNewCustomer(req *http.Request, result map[string]interface{}) {
 		param{"name", "str"},
 		param{"phone_number", "str"},
 		param{"level", "int"},
-		param{"keyfob_number", "int"})
+		param{"keyfob_number", "uint64"})
 
 	if err != nil {
 		result["error"] = stringifyErr(err, "Error Adding New Customer")
@@ -71,7 +71,7 @@ func addNewCustomer(req *http.Request, result map[string]interface{}) {
 		Phone:   params["phone_number"].(string),
 		Status:  true,
 		Level:   params["level"].(int),
-		Fob_num: params["keyfob_number"].(int)}
+		Fob_num: params["keyfob_number"].(uint64)}
 
 	err = database.CreateRecord(customer)
 

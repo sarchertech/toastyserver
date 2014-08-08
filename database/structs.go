@@ -9,18 +9,18 @@ type Customer struct {
 	Phone   string
 	Status  bool
 	Level   int
-	Fob_num int
+	Fob_num uint64
 }
 
 type Employee struct {
 	Id      int `db:"autoInc"`
 	Name    string
 	Level   int
-	Fob_num int
+	Fob_num uint64
 }
 
 type Keyfob struct {
-	Fob_num int
+	Fob_num uint64
 	Admin   bool
 }
 

@@ -71,7 +71,7 @@ func addDevData() {
 	addFakeBeds()
 }
 
-func addFakeKeyfobs() (adminKeyfobs []int, customerKeyfobs []int) {
+func addFakeKeyfobs() (adminKeyfobs []uint64, customerKeyfobs []uint64) {
 	adminKeyfobs = fakeNumbers(10)
 	customerKeyfobs = fakeNumbers(10)
 
@@ -88,14 +88,14 @@ func addFakeKeyfobs() (adminKeyfobs []int, customerKeyfobs []int) {
 	return
 }
 
-func addFakeEmployees(keyfobs []int) {
+func addFakeEmployees(keyfobs []uint64) {
 	for e := range keyfobs {
 		employee := database.Employee{Name: fakeName(), Level: 1, Fob_num: keyfobs[e]}
 		database.CreateRecord(employee)
 	}
 }
 
-func addFakeCustomers(keyfobs []int) {
+func addFakeCustomers(keyfobs []uint64) {
 	for e := range keyfobs {
 		customer := database.Customer{Name: fakeName(), Level: 3, Fob_num: keyfobs[e],
 			Phone: fakePhone(), Status: true}
@@ -142,11 +142,11 @@ func fakePhone() string {
 }
 
 //could make duplicates
-func fakeNumbers(number int) []int {
-	var numList []int
+func fakeNumbers(number int) []uint64 {
+	var numList []uint64
 
 	for i := 0; i < number; i++ {
-		numList = append(numList, int(r.Int31n(1048500)))
+		numList = append(numList, uint64(r.Int31n(1048500)))
 	}
 
 	return numList

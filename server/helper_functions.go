@@ -57,6 +57,13 @@ func getParams(req *http.Request, paramList ...param) (params map[string]interfa
 				continue
 			}
 			params[p.Name] = num
+		} else if p.Type == "uint64" {
+			num, errr := strconv.ParseUint(param, 10, 64)
+			if errr != nil {
+				notInts = notInts + " " + p.Name + ","
+				continue
+			}
+			params[p.Name] = num
 		} else {
 			params[p.Name] = param
 		}

@@ -13,7 +13,7 @@ import (
 
 //TODO log calling function when logging sql errors
 
-func FindEmployee(keyNum int) (name string, err error) {
+func FindEmployee(keyNum uint64) (name string, err error) {
 	stmt, err := db.Prepare(`SELECT Name
 							 FROM Employee
 							 WHERE Employee.Fob_num=?`)
@@ -31,7 +31,7 @@ func FindEmployee(keyNum int) (name string, err error) {
 	return
 }
 
-func FindCustomer(keyNum int) (id int, name string, stat bool, lvl int, err error) {
+func FindCustomer(keyNum uint64) (id int, name string, stat bool, lvl int, err error) {
 	stmt, err := db.Prepare(`SELECT Id, Name, Status, Level
 							 FROM Customer
 							 WHERE Customer.Fob_num=?`)

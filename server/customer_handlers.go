@@ -21,7 +21,7 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 	//            4: Already tanned today.
 
 	//Params Error
-	params, err := getParams(req, param{"fob_num", "int"})
+	params, err := getParams(req, param{"fob_num", "uint64"})
 	if err != nil {
 		result["error_code"] = 1
 		result["error_message"] = stringifyErr(err, "Error With Customer Login")
@@ -29,7 +29,7 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 	}
 
 	//DB Error
-	id, name, stat, lvl, err := database.FindCustomer(params["fob_num"].(int))
+	id, name, stat, lvl, err := database.FindCustomer(params["fob_num"].(uint64))
 	if err != nil {
 		result["error_code"] = 1
 		result["error_message"] = stringifyErr(err, "Error With Customer Login")
