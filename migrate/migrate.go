@@ -21,7 +21,7 @@ func main() {
 		createDevelopmentDB()
 		fmt.Println("Creating Development DB")
 	default:
-		fmt.Println("No environment selected. Please pass env flag")
+		fmt.Println("No environment selected. Please pass env flag (migrate -env=development or -env=production")
 	}
 }
 
