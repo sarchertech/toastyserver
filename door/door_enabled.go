@@ -13,6 +13,7 @@ import (
 	"time"
 )
 
+//TODO remove most of the logs
 func StartDoorControl() {
 	log.Println("Door control enabled.")
 
