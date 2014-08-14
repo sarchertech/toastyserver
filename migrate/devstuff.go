@@ -18,7 +18,7 @@ func createDevelopmentDB() {
 		return
 	}
 
-	database.OpenDB()
+	database.CreateAndOpenDB()
 	defer database.CloseDB()
 
 	database.UpSchema()

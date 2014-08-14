@@ -32,7 +32,7 @@ func createProductionDB() {
 		return
 	}
 
-	database.OpenDB()
+	database.CreateAndOpenDB()
 	defer database.CloseDB()
 
 	database.UpSchema()

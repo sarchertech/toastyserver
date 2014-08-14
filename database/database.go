@@ -11,8 +11,8 @@ import (
 	"log"
 )
 
-const dbName string = "ToastyTest"
-const dbPath string = "./" + dbName + ".db"
+const dbName string = "Toasty"
+const dbPath string = "./" + dbName + ".sqlite"
 
 //global variable for database pool
 var db *sql.DB
@@ -29,7 +29,16 @@ var db *sql.DB
 // 	}
 // }
 
+//opens only will not create a db if doesn't already exist
 func OpenDB() {
+
+	// equivalent to Python's `if not os.path.exists(filename)`
+	// Exit if no db found, don't create one
+	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
+    	log.Fatalf("no such file or directory: %s", dbPath)
+    	return
+	}
+	
 	var err error
 	db, err = sql.Open("sqlite3", dbPath)
 	if err != nil {
@@ -46,6 +55,25 @@ func OpenDB() {
 		log.Fatalf("Error on opening database connection: %s", err.Error())
 		return
 	}
+}
+
+func CreateAndOpenDB() {
+	var err error
+	db, err = sql.Open("sqlite3", dbPath)
+	if err != nil {
+		log.Fatalf("Error on initializing database connection: %s", err.Error())
+		return
+	}
+	//defer db.Close()
+
+	//TODO figure out haow many max idle connections needed
+	db.SetMaxIdleConns(10)
+
+	err = db.Ping() // This makes sure the database is accessible
+	if err != nil {
+		log.Fatalf("Error on opening database connection: %s", err.Error())
+		return
+	}	
 }
 
 func CloseDB() {
