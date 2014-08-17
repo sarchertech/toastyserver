@@ -30,6 +30,7 @@ func schema() map[string]string {
 					 Bed_num integer not null,
 					 Customer_id integer not null,
 					 Session_time integer not null,
+					 Cancelled boolean not null,
 					 Time_stamp integer not null)`
 
 	s["DoorAccess"] = `(Id integer primary key,

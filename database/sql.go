@@ -53,6 +53,7 @@ func FindMostRecentSession(cust_id int) (id int, time int64, bed int, err error)
 	stmt, err := db.Prepare(`SELECT Id, Time_stamp, Bed_num
 							 FROM Session
 							 WHERE Session.Customer_id=?
+							 AND Session.Cancelled=0
 							 ORDER BY Session.Time_stamp DESC
 							 LIMIT 1`)
 	if err != nil {
@@ -61,6 +62,27 @@ func FindMostRecentSession(cust_id int) (id int, time int64, bed int, err error)
 	defer stmt.Close()
 
 	err = stmt.QueryRow(cust_id).Scan(&id, &time, &bed)
+	if err == sql.ErrNoRows {
+		log.Println(err)
+		err = nil
+	}
+
+	return
+}
+
+func LastCancelledSessionTime(cust_id int) (time int64, err error) {
+	stmt, err := db.Prepare(`SELECT Time_stamp
+							 FROM Session
+							 WHERE Session.Customer_id=?
+							 AND Session.Cancelled=1
+							 ORDER BY Session.Time_stamp DESC
+							 LIMIT 1`)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	err = stmt.QueryRow(cust_id).Scan(&time)
 	if err == sql.ErrNoRows {
 		log.Println(err)
 		err = nil
@@ -362,6 +384,25 @@ func RecentTanSessions() (sessions []Session, err error) {
 		sessions = append(sessions, s)
 	}
 	rows.Close()
+
+	return
+}
+
+func CancelSession(id int) (err error) {
+	stmt, err := db.Prepare(`UPDATE Session
+							 SET Cancelled = 1
+							 WHERE Session.Id = ?`)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(id)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	return
 }

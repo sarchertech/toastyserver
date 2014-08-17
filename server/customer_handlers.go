@@ -120,33 +120,35 @@ func cancelSession(req *http.Request, result map[string]interface{}) {
 		return
 	}
 
-	//get last session information--time, and bed number default values
+	//get last session information id and time time, default values
 	//for both are 0, so if there is no last session both with be set to 0
 	id := params["customer_id"].(int)
-	lastSessionId, lastSessionTime, lastSessionBedId, err := database.FindMostRecentSession(id)
+	lastSessionId, lastSessionTime, _, err := database.FindMostRecentSession(id)
 	if err != nil {
 		result["error_code"] = 1
 		result["error_message"] = stringifyErr(err, "Error Cancelling Session")
 		return
 	}
 
-	var beds []database.Bed
-	var bed database.Bed
-	bed.Bed_num = lastSessionBedId
-
-	beds = append(beds, bed)
-	tmak.BedStatuses(beds)
-
-	//Can't cancel after 5 minutes or bed already started
-	if !(beds[0].Status) || (time.Now().Unix()-lastSessionTime > 300) {
+	//Can't cancel after 5 minutes
+	if time.Now().Unix()-lastSessionTime > 300 {
 		//return error bed already started--more than 5 minutes since session creation
-		err = errors.New("Bed already started")
+		err = errors.New("More than 5 minutes has passed")
 		result["error_code"] = 2
 		result["error_message"] = stringifyErr(err, "Error Cancelling Session")
 		return
 	}
 
-	err = database.DeleteSession(lastSessionId)
+	//Can't cancel more than 1x per day. Check if last cancelled time within last 12 hours
+	cancelledTime, err := database.LastCancelledSessionTime(id)
+	if time.Now().Unix()-cancelledTime < 43200 {
+		err = errors.New("You can't restart a session more than once")
+		result["error_code"] = 2
+		result["error_message"] = stringifyErr(err, "Error Cancelling Session")
+		return
+	}
+
+	err = database.CancelSession(lastSessionId)
 	if err != nil {
 		result["error_code"] = 1
 		result["error_message"] = stringifyErr(err, "Error Cancelling Session")

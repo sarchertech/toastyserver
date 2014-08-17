@@ -37,6 +37,7 @@ type Session struct {
 	Bed_num      int
 	Customer_id  int
 	Session_time int
+	Cancelled    bool
 	Time_stamp   int64
 	Name		 string `db:"false"`
 	Local_time   string `db:"false"`
