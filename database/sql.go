@@ -336,6 +336,7 @@ func RecentDoorAccesses() (doorAccesses []DoorAccess, err error) {
 						   ORDER BY DoorAccess.Id DESC
 						   LIMIT 500`)
 	if err != nil {
+		log.Println(err)
 		return
 	}
 	defer rows.Close()
@@ -360,13 +361,14 @@ func RecentDoorAccesses() (doorAccesses []DoorAccess, err error) {
 //TODO add date filter
 func RecentTanSessions() (sessions []Session, err error) {
 	rows, err := db.Query(`SELECT Session.Id, Customer_id, Name, Bed_num, 
-						     Time_stamp, Session_time 
+						     Cancelled, Time_stamp, Session_time 
 						   FROM Session
 						   INNER JOIN Customer
 						   ON Session.Customer_id == Customer.Id
 						   ORDER BY Session.Id DESC
 						   LIMIT 500`)
 	if err != nil {
+		log.Println(err)
 		return
 	}
 	defer rows.Close()
@@ -374,8 +376,8 @@ func RecentTanSessions() (sessions []Session, err error) {
 	//equivalent to while rows.Next() == true
 	for rows.Next() {
 		var s Session
-		rows.Scan(&s.Id, &s.Customer_id, &s.Name, &s.Bed_num, &s.Time_stamp, 
-			&s.Session_time)
+		rows.Scan(&s.Id, &s.Customer_id, &s.Name, &s.Bed_num, &s.Cancelled, 
+			&s.Time_stamp, &s.Session_time)
 
 		s.Local_time = time.Unix(s.Time_stamp, 0).Local().Format("3:04pm")
 		s.Month = time.Unix(s.Time_stamp, 0).Local().Format("01")
