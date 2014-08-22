@@ -49,6 +49,11 @@ func OpenDB() {
 	if _, err = db.Exec("PRAGMA journal_mode=WAL;"); err != nil {
 		log.Fatal("Failed to Exec PRAGMA journal_mode:", err)
 	}
+	//NORMAL less often than full--corruption possible with power loss
+	if _, err = db.Exec("PRAGMA synchronous=NORMAL;"); err != nil {
+		log.Fatal("Failed to Exec PRAGMA synchronous:", err)
+	}
+
 
 	//defer db.Close()
 
@@ -70,6 +75,14 @@ func CreateAndOpenDB() {
 		return
 	}
 	//defer db.Close()
+
+	if _, err = db.Exec("PRAGMA journal_mode=WAL;"); err != nil {
+		log.Fatal("Failed to Exec PRAGMA journal_mode:", err)
+	}
+	//NORMAL less often than full--corruption possible with power loss
+	if _, err = db.Exec("PRAGMA synchronous=NORMAL;"); err != nil {
+		log.Fatal("Failed to Exec PRAGMA synchronous:", err)
+	}
 
 	//TODO figure out haow many max idle connections needed
 	db.SetMaxIdleConns(10)
