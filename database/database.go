@@ -45,6 +45,11 @@ func OpenDB() {
 		log.Fatalf("Error on initializing database connection: %s", err.Error())
 		return
 	}
+	
+	if _, err = db.Exec("PRAGMA journal_mode=WAL;"); err != nil {
+		log.Fatal("Failed to Exec PRAGMA journal_mode:", err)
+	}
+
 	//defer db.Close()
 
 	//TODO figure out haow many max idle connections needed
