@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strings"
 	"time"
+	"math/rand"
 	//blank identifer because we only care about side effects
 	_ "github.com/learc83/go-sqlite3"
 )
@@ -529,4 +530,58 @@ func MoveBedUp(bed_num int) (err error) {
 	tx.Commit()
 
 	return	
+}
+
+func AddFakeDoorAccesses() (err error) {
+	log.Println("Adding fake door access")
+
+	tx, err := db.Begin()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	stmt, err := tx.Prepare(`INSERT INTO DoorAccess (Customer_id, Time_stamp)
+							 VALUES (?, ?)`)
+
+	for i := 0; i < 20000; i++ {
+		_, err = stmt.Exec(rand.Intn(7) + 1, time.Now().Unix() - int64(500000) + int64(609 * i))
+		
+		if err != nil {
+			log.Println(err)
+			tx.Rollback()
+			return
+		}
+	}
+
+	tx.Commit()
+
+	return
+}
+
+func AddFakeSessions() (err error) {
+	log.Println("Adding fake sessions")
+
+	tx, err := db.Begin()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	stmt, err := tx.Prepare(`INSERT INTO Session (Bed_num, Session_time, Customer_id, Time_stamp, Cancelled)
+							 VALUES (?, ?, ?, ?, ?)`)
+
+	for i := 0; i < 20000; i++ {
+		_, err = stmt.Exec(rand.Intn(5) + 1, rand.Intn(8) + 2, rand.Intn(7) + 1, time.Now().Unix() - int64(500000) + int64(609 * i), 0)
+		
+		if err != nil {
+			log.Println(err)
+			tx.Rollback()
+			return
+		}
+	}
+
+	tx.Commit()
+
+	return
 }

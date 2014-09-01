@@ -111,6 +111,8 @@ func DeleteDB() (err error) {
 
 	fmt.Println("Deleting Dabase: " + dbName)
 	os.Remove(dbPath)
+	os.Remove(dbPath + ".sqlite-shm")
+	os.Remove(dbPath + ".sqlite-wal")
 	return
 }
 

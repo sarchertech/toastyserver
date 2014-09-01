@@ -14,24 +14,29 @@ func main() {
 	fmt.Println(*envPtr)
 
 	switch *envPtr {
-	case "production":
-		createProductionDB()
+	case "production":		
+		err := database.DeleteDB()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
 		fmt.Println("Creating Production DB")
+		createProductionDB()
 	case "development":
-		createDevelopmentDB()
+		err := database.DeleteDB()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 		fmt.Println("Creating Development DB")
+		createDevelopmentDB()
 	default:
 		fmt.Println("No environment selected. Please pass env flag (migrate -env=development or -env=production")
 	}
 }
 
 func createProductionDB() {
-	err := database.DeleteDB()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
 	database.CreateAndOpenDB()
 	defer database.CloseDB()
 
