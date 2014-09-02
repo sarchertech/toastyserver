@@ -65,24 +65,15 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 	//lastSessionTime and lastSessionBed return 0 if no values are found
 
 	//Cancel Session
-	//if session started in last 5 minutes && bed status is true (not on)
+	//if session started in last 5 minutes
 	//then return error code 5 which allows customer to cancel bed
 	//will not take this path if lastSesssionBedId == 0, i.e. no last session
-	if (time.Now().Unix()-lastSessionTime < 300) && (lastSessionBedId != 0) {
-		var beds []database.Bed
-		var bed database.Bed
-		bed.Bed_num = lastSessionBedId
-
-		beds = append(beds, bed)
-		tmak.BedStatuses(beds)
-
-		if beds[0].Status {
-			err = errors.New("Session in Progress")
-			result["error_code"] = 5
-			result["error_message"] = stringifyErr(err, "Error With Customer Login")
-			result["customer_id"] = id
-			return
-		}
+	if (lastSessionBedId != 0) && (time.Now().Unix()-lastSessionTime < 300) {
+		err = errors.New("Session in Progress")
+		result["error_code"] = 5
+		result["error_message"] = stringifyErr(err, "Error With Customer Login")
+		result["customer_id"] = id
+		return
 	}
 
 	// at least 12 hours
