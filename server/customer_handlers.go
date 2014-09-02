@@ -123,7 +123,7 @@ func cancelSession(req *http.Request, result map[string]interface{}) {
 	//get last session information id and time time, default values
 	//for both are 0, so if there is no last session both with be set to 0
 	id := params["customer_id"].(int)
-	lastSessionId, lastSessionTime, _, err := database.FindMostRecentSession(id)
+	lastSessionId, lastSessionTime, bed, err := database.FindMostRecentSession(id)
 	if err != nil {
 		result["error_code"] = 1
 		result["error_message"] = stringifyErr(err, "Error Cancelling Session")
@@ -155,8 +155,19 @@ func cancelSession(req *http.Request, result map[string]interface{}) {
 		return
 	}
 
-	//Empty braces == succcess or no sessions to delete
+	go func() {
+		err := tmak.StartBed(bed, 0)
+		time.Sleep(0.10 * 1e9)
+		err = tmak.StartBed(bed, 0)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
+		log.Println("bed stopped by customer")
+	}()
+
+	//Empty braces == succcess or no sessions to delete
 }
 
 func bedStatus(req *http.Request, result map[string]interface{}) {
