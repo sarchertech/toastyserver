@@ -146,10 +146,12 @@ func cancelSession(req *http.Request, result map[string]interface{}) {
 		return
 	}
 
+	//stop bed--send 1 minute to do that, 0 doesn't work--I think b/c the prop code on the toasty board is handling 0 oddly
+	//1 works b/c tanning beds have a minimum time of 2 minutes
 	go func() {
-		err := tmak.StartBed(bed, 0)
+		err := tmak.StartBed(bed, 1)
 		time.Sleep(0.10 * 1e9)
-		err = tmak.StartBed(bed, 0)
+		err = tmak.StartBed(bed, 1)
 		if err != nil {
 			log.Println(err)
 			return
