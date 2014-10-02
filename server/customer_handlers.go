@@ -68,6 +68,8 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 	//if session started in last 5 minutes
 	//then return error code 5 which allows customer to cancel bed
 	//will not take this path if lastSesssionBedId == 0, i.e. no last session
+	//TODOneed to check that it hasn't been cancelled at least 1 time. to prevent popup box 
+	//from popping up in the first place
 	if (lastSessionBedId != 0) && (time.Now().Unix()-lastSessionTime < 300) {
 		err = errors.New("Session in Progress")
 		result["error_code"] = 5
@@ -94,14 +96,6 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 	//fmt.Println(lastSessionTime)
 	if lastSessionTime > midnight.Unix() {
 		err = errors.New("Already Tanned Today")
-		result["error_code"] = 4
-		result["error_message"] = stringifyErr(err, "Error With Customer Login")
-		return
-	}
-
-	cancelledTime, err := database.LastCancelledSessionTime(id)
-	if time.Now().Unix()-cancelledTime < 43200 {
-		err = errors.New("Already Tanned Today. Can't Cancel Session More Than Once Per Day.")
 		result["error_code"] = 4
 		result["error_message"] = stringifyErr(err, "Error With Customer Login")
 		return
