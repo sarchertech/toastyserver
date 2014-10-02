@@ -99,6 +99,14 @@ func customerLogin(req *http.Request, result map[string]interface{}) {
 		return
 	}
 
+	cancelledTime, err := database.LastCancelledSessionTime(id)
+	if time.Now().Unix()-cancelledTime < 43200 {
+		err = errors.New("Already Tanned Today. Can't Cancel Session More Than Once Per Day.")
+		result["error_code"] = 4
+		result["error_message"] = stringifyErr(err, "Error With Customer Login")
+		return
+	}
+
 	result["id"] = id
 	result["name"] = name
 	result["level"] = lvl
